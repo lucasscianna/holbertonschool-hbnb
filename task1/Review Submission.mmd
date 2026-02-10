@@ -1,0 +1,25 @@
+sequenceDiagram
+participant Client
+participant API
+participant Facade as HBnBFacade
+participant UserRepo
+participant PlaceRepo
+participant Review
+participant ReviewRepo
+participant DB
+
+Client->>API: POST /reviews
+API->>Facade: add_review(user_id, place_id, data)
+Facade->>UserRepo: get_by_id(user_id)
+UserRepo->>DB: SELECT user
+DB-->>UserRepo: OK
+Facade->>PlaceRepo: get_by_id(place_id)
+PlaceRepo->>DB: SELECT place
+DB-->>PlaceRepo: OK
+Facade->>Review: new Review(data)
+Facade->>ReviewRepo: save(review)
+ReviewRepo->>DB: INSERT review
+DB-->>ReviewRepo: OK
+ReviewRepo-->>Facade: saved
+Facade-->>API: success
+API-->>Client: 201 Created

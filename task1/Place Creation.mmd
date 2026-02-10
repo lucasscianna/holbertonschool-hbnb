@@ -1,0 +1,21 @@
+sequenceDiagram
+participant Client
+participant API
+participant Facade as HBnBFacade
+participant UserRepo
+participant Place
+participant PlaceRepo
+participant DB
+
+Client->>API: POST /places (place data)
+API->>Facade: create_place(user_id, data)
+Facade->>UserRepo: get_by_id(user_id)
+UserRepo->>DB: SELECT user
+DB-->>UserRepo: user found
+Facade->>Place: new Place(data)
+Facade->>PlaceRepo: save(place)
+PlaceRepo->>DB: INSERT place
+DB-->>PlaceRepo: OK
+PlaceRepo-->>Facade: place saved
+Facade-->>API: success
+API-->>Client: 201 Created
