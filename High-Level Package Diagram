@@ -1,0 +1,63 @@
+classDiagram
+
+%% =======================
+%% PRESENTATION LAYER
+%% =======================
+class PresentationLayer {
+    <<Layer>>
+    API_Endpoints
+    Services
+}
+
+class HBnBFacade {
+    <<Facade>>
+    +create_user()
+    +create_place()
+    +add_review()
+    +list_places()
+}
+
+%% =======================
+%% BUSINESS LOGIC LAYER
+%% =======================
+class BusinessLogicLayer {
+    <<Layer>>
+}
+
+class User
+class Place
+class Review
+class Amenity
+
+%% =======================
+%% PERSISTENCE LAYER
+%% =======================
+class PersistenceLayer {
+    <<Layer>>
+}
+
+class UserRepository
+class PlaceRepository
+class ReviewRepository
+class AmenityRepository
+class Database
+
+%% =======================
+%% RELATIONSHIPS
+%% =======================
+
+PresentationLayer --> HBnBFacade : Uses
+HBnBFacade --> User
+HBnBFacade --> Place
+HBnBFacade --> Review
+HBnBFacade --> Amenity
+
+User --> UserRepository
+Place --> PlaceRepository
+Review --> ReviewRepository
+Amenity --> AmenityRepository
+
+UserRepository --> Database
+PlaceRepository --> Database
+ReviewRepository --> Database
+AmenityRepository --> Database
