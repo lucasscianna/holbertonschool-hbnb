@@ -1,41 +1,7 @@
-# High-Level Package Diagram
+flowchart TB
+    Presentation --> BusinessLogic
+    BusinessLogic --> DataAccess
+    DataAccess --> Database
 
-## Overview
-
-This diagram represents the high-level architecture of the HBnB Evolution application.  
-The system follows a three-layered architecture composed of:
-
-- Presentation Layer
-- Business Logic Layer
-- Persistence Layer
-
-The layers communicate through a Facade pattern to ensure separation of concerns.
-
-## Diagram
-
-```mermaid
-classDiagram
-direction TB
-
-class PresentationLayer {
-    <<Layer>>
-    API
-    Services
-}
-
-class BusinessLogicLayer {
-    <<Layer>>
-    User
-    Place
-    Review
-    Amenity
-}
-
-class PersistenceLayer {
-    <<Layer>>
-    Repository
-    Database
-}
-
-PresentationLayer --> BusinessLogicLayer : Facade
-BusinessLogicLayer --> PersistenceLayer : Data access
+    BusinessLogic -->|Validation Error| Presentation
+    DataAccess -->|Database Error| BusinessLogic
