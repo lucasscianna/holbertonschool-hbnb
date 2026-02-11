@@ -1,3 +1,9 @@
+The HBnB Evolution project is a modular application that follows a layered architecture to ensure maintainability and scalability.
+
+The purpose of this document is to describe the core entities of the Business Logic Layer.
+
+It contains a class diagram detailing the system’s main domain models, their attributes, inheritance relationships, and associations.
+
 ```mermaid
 classDiagram
 direction TB
