@@ -1,0 +1,18 @@
+sequenceDiagram
+participant User
+participant API
+participant BusinessLogic
+participant Database
+
+User->>API: POST /reviews
+API->>BusinessLogic: validate review data
+
+alt invalid review or place not found
+    BusinessLogic-->>API: error
+    API-->>User: 400 Bad Request
+else valid review
+    BusinessLogic->>Database: save review
+    Database-->>BusinessLogic: review saved
+    BusinessLogic-->>API: success
+    API-->>User: 201 Created
+end
