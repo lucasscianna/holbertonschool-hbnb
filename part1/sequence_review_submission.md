@@ -1,3 +1,7 @@
+The HBnB Evolution project is a web-based application designed to manage users, places, reviews, and amenities using a structured layered architecture.
+The purpose of this document is to present the high-level architectural design of the system.
+It contains a package diagram illustrating the separation of concerns between the Presentation Layer, the Business Logic Layer, and the Persistence Layer.
+
 ```mermaid
 sequenceDiagram
 participant User
