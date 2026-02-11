@@ -1,0 +1,25 @@
+classDiagram
+direction TB
+
+class PresentationLayer {
+    <<Layer>>
+    API
+    Services
+}
+
+class BusinessLogicLayer {
+    <<Layer>>
+    User
+    Place
+    Review
+    Amenity
+}
+
+class PersistenceLayer {
+    <<Layer>>
+    Repository
+    Database
+}
+
+PresentationLayer --> BusinessLogicLayer : Facade
+BusinessLogicLayer --> PersistenceLayer : Data access
