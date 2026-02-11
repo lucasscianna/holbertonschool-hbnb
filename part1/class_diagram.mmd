@@ -1,45 +1,37 @@
 classDiagram
 direction TB
 
-class BaseEntity {
-    +id : UUID
-    +created_at : datetime
-    +updated_at : datetime
+class PresentationLayer {
+    <<Layer>>
+    API
+    Services
 }
 
-class User {
-    +first_name : string
-    +last_name : string
-    +email : string
-    +password : string
-    +is_admin : boolean
+class BusinessLogicLayer {
+    <<Layer>>
+    User
+    Place
+    Review
+    Amenity
 }
 
-class Place {
-    +title : string
-    +description : string
-    +price : float
-    +latitude : float
-    +longitude : float
+class PersistenceLayer {
+    <<Layer>>
+    Repository
+    Database
 }
 
-class Review {
-    +rating : int
-    +comment : string
-}
+PresentationLayer --> BusinessLogicLayer : Facade
+BusinessLogicLayer --> PersistenceLayer : Data access
 
-class Amenity {
-    +name : string
-    +description : string
-}
+##High-Level Architecture Overview
 
-BaseEntity <|-- User
-BaseEntity <|-- Place
-BaseEntity <|-- Review
-BaseEntity <|-- Amenity
+This diagram presents the overall architecture of the HBnB Evolution application, which follows a three-layered architecture.
 
-User --> Place : owns
-Place --> Review : has
-User --> Review : writes
-Place --> Amenity : includes
+The Presentation Layer handles user interactions through APIs and services.
 
+The Business Logic Layer contains the core domain models and enforces business rules. It is accessed through a Facade to simplify communication.
+
+The Persistence Layer is responsible for storing and retrieving data from the database.
+
+This architecture ensures separation of concerns, maintainability, and scalability.
