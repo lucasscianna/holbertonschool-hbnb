@@ -1,3 +1,4 @@
+'''mermaid
 classDiagram
 direction TB
 
@@ -23,6 +24,7 @@ class PersistenceLayer {
 
 PresentationLayer --> BusinessLogicLayer : Facade
 BusinessLogicLayer --> PersistenceLayer : Data access
+'''
 
 ##High-Level Architecture Overview
 
