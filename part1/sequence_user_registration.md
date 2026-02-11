@@ -1,3 +1,7 @@
+The HBnB Evolution project manages users and property listings through a structured multi-layered system.
+The purpose of this document is to describe the dynamic behavior of the system during the user registration process.
+It contains a sequence diagram illustrating the interaction between the User, API, Business Logic layer, and Database, including validation and error handling.
+
 ```mermaid
 sequenceDiagram
 participant User
