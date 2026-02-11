@@ -1,0 +1,44 @@
+classDiagram
+direction TB
+
+class BaseEntity {
+    +id : UUID
+    +created_at : datetime
+    +updated_at : datetime
+}
+
+class User {
+    +first_name : string
+    +last_name : string
+    +email : string
+    +password : string
+    +is_admin : boolean
+}
+
+class Place {
+    +title : string
+    +description : string
+    +price : float
+    +latitude : float
+    +longitude : float
+}
+
+class Review {
+    +rating : int
+    +comment : string
+}
+
+class Amenity {
+    +name : string
+    +description : string
+}
+
+BaseEntity <|-- User
+BaseEntity <|-- Place
+BaseEntity <|-- Review
+BaseEntity <|-- Amenity
+
+User --> Place : owns
+Place --> Review : has
+User --> Review : writes
+Place --> Amenity : includes
