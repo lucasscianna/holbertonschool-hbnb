@@ -26,7 +26,7 @@ PresentationLayer --> BusinessLogicLayer : Facade
 BusinessLogicLayer --> PersistenceLayer : Data access
 ```
 
-##High-Level Architecture Overview
+High-Level Architecture Overview
 
 This diagram presents the overall architecture of the HBnB Evolution application, which follows a three-layered architecture.
 
