@@ -1,3 +1,7 @@
+The HBnB Evolution project allows authenticated users to create and manage property listings.
+The purpose of this document is to describe how a new place is created within the system.
+It contains a sequence diagram that shows the interactions between system components during place creation, including input validation and possible error responses.
+
 ```mermaid
 sequenceDiagram
 participant User
