@@ -1,3 +1,7 @@
+The HBnB Evolution project provides users with the ability to browse available places.
+The purpose of this document is to describe how the system retrieves and returns a list of places.
+It contains a sequence diagram showing the interaction between the User, API, Business Logic, and Database layers, including the case where no places are found.
+
 ```mermaid
 sequenceDiagram
 participant User
