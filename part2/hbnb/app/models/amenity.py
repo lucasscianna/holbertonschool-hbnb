@@ -5,7 +5,7 @@ class Amenity(BaseModel):
         super().__init__()
         self.name = self.validate_name(name)
 
-        def validate_name(self, name):
-            if not name or len(name) > 50:
-                raise ValueError("Amenity name is required and must be <= 50 characters.")
-            return name
+    def validate_name(self, name):
+        if not name or len(name) > 50:
+            raise ValueError("Amenity name is required and must be <= 50 characters.")
+        return name
