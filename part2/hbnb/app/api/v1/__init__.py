@@ -1,6 +1,3 @@
-"""
-Initialisation de l'API V1 et enregistrement des namespaces.
-"""
 from flask_restx import Api
 from flask import Blueprint
 from app.api.v1.users import api as users_ns
