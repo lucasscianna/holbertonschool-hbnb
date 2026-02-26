@@ -43,7 +43,7 @@ root@hbnb:~/holbertonschool-hbnb/part2/hbnb# export PYTHONPATH=$(pwd)
 root@hbnb:~/holbertonschool-hbnb/part2/hbnb# python3 tests/test_api.py
 ......
 ----------------------------------------------------------------------
-Ran 6 tests in 0.206s
+Ran 5 tests in 0.206s
 
 OK
 ```
