@@ -52,11 +52,18 @@ class HBnBFacade:
         if not place_data.get("title"): raise ValueError("Title is required")
         
         price = place_data.get("price")
-        if price is None or price <= 0: raise ValueError("Price must be positive")
+        # Vérification : doit être un nombre (int ou float) et positif
+        if not isinstance(price, (int, float)) or price <= 0:
+            raise ValueError("Price must be a positive number")
         
-        lat, lon = place_data.get("latitude"), place_data.get("longitude")
-        if lat is None or not (-90 <= lat <= 90): raise ValueError("Invalid latitude")
-        if lon is None or not (-180 <= lon <= 180): raise ValueError("Invalid longitude")
+        lat = place_data.get("latitude")
+        lon = place_data.get("longitude")
+        # Vérification : latitude doit être un nombre entre -90 et 90
+        if not isinstance(lat, (int, float)) or not (-90 <= lat <= 90):
+            raise ValueError("Invalid latitude")
+        # Vérification : longitude doit être un nombre entre -180 et 180
+        if not isinstance(lon, (int, float)) or not (-180 <= lon <= 180):
+            raise ValueError("Invalid longitude")
         
         place = Place(title=place_data["title"], description=place_data.get("description"),
                       price=price, latitude=lat, longitude=lon, owner=owner)
@@ -85,8 +92,9 @@ class HBnBFacade:
     def create_review(self, review_data):
         if not review_data.get("text"): raise ValueError("Review text is required")
         rating = review_data.get("rating")
+        # Vérification : rating doit être un entier strict entre 1 et 5
         if not isinstance(rating, int) or not (1 <= rating <= 5):
-            raise ValueError("Rating must be between 1 and 5")
+            raise ValueError("Rating must be an integer between 1 and 5")
         
         user = self.get_user(review_data.get("user_id"))
         place = self.get_place(review_data.get("place_id"))
@@ -94,7 +102,6 @@ class HBnBFacade:
 
         review = Review(text=review_data["text"], rating=rating, user=user, place=place)
         self.review_repo.add(review)
-        # Relation bidirectionnelle
         if review not in place.reviews:
             place.reviews.append(review)
         return review
@@ -116,8 +123,11 @@ class HBnBFacade:
             if not review_data["text"]: raise ValueError("Text cannot be empty")
             review.text = review_data["text"]
         if "rating" in review_data:
-            if not (1 <= review_data["rating"] <= 5): raise ValueError("Invalid rating")
-            review.rating = review_data["rating"]
+            rating = review_data["rating"]
+            # Vérification du type lors de la mise à jour aussi
+            if not isinstance(rating, int) or not (1 <= rating <= 5):
+                raise ValueError("Invalid rating")
+            review.rating = rating
         return review
     
     def delete_review(self, review_id):
