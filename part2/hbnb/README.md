@@ -21,31 +21,72 @@ Repositories (InMemoryRepository)
         ↓
 Models (User, Place, Review, Amenity)
 
-
-📂 Project Structure
+```
 hbnb/
 ├── app/
-│   ├── __init__.py
-│   ├── api/
+│   ├── __init__.py              # Initialize Flask application
+│   │
+│   ├── api/                     # Presentation Layer (API endpoints)
+│   │   ├── __init__.py
 │   │   ├── v1/
-│   │       ├── users.py
-│   │       ├── places.py
-│   │       ├── reviews.py
-│   │       ├── amenities.py
-│   ├── models/
-│   │   ├── user.py
-│   │   ├── place.py
-│   │   ├── review.py
-│   │   ├── amenity.py
-│   ├── services/
-│   │   ├── facade.py
-│   ├── persistence/
-│       ├── repository.py
-├── run.py
-├── config.py
-├── requirements.txt
-├── README.md
-
+│   │       ├── __init__.py
+│   │       ├── users.py         # User endpoints
+│   │       ├── places.py        # Place endpoints
+│   │       ├── reviews.py       # Review endpoints
+│   │       ├── amenities.py     # Amenity endpoints
+│   │
+│   ├── models/                  # Business Entities
+│   │   ├── __init__.py
+│   │   ├── user.py              # User model
+│   │   ├── place.py             # Place model
+│   │   ├── review.py            # Review model
+│   │   ├── amenity.py           # Amenity model
+│   │
+│   ├── services/                # Business Logic Layer
+│   │   ├── __init__.py
+│   │   ├── facade.py            # HBnBFacade (Facade Pattern)
+│   │
+│   ├── persistence/             # Data access layer
+│       ├── __init__.py
+│       ├── repository.py        # InMemoryRepository
+│
+├── run.py                       # Application entry point
+├── config.py                    # Configuration file
+├── requirements.txt             # Project dependencies
+├── README.md                    # Project documentation
+hbnb/
+├── app/
+│   ├── __init__.py              # Initialize Flask application
+│   │
+│   ├── api/                     # Presentation Layer (API endpoints)
+│   │   ├── __init__.py
+│   │   ├── v1/
+│   │       ├── __init__.py
+│   │       ├── users.py         # User endpoints
+│   │       ├── places.py        # Place endpoints
+│   │       ├── reviews.py       # Review endpoints
+│   │       ├── amenities.py     # Amenity endpoints
+│   │
+│   ├── models/                  # Business Entities
+│   │   ├── __init__.py
+│   │   ├── user.py              # User model
+│   │   ├── place.py             # Place model
+│   │   ├── review.py            # Review model
+│   │   ├── amenity.py           # Amenity model
+│   │
+│   ├── services/                # Business Logic Layer
+│   │   ├── __init__.py
+│   │   ├── facade.py            # HBnBFacade (Facade Pattern)
+│   │
+│   ├── persistence/             # Data access layer
+│       ├── __init__.py
+│       ├── repository.py        # InMemoryRepository
+│
+├── run.py                       # Application entry point
+├── config.py                    # Configuration file
+├── requirements.txt             # Project dependencies
+├── README.md                    # Project documentation
+```
 
 🧠 Design Principles
 ✔ Separation of Concerns
@@ -148,3 +189,4 @@ JWT Authentication
 Role-based access control
 Persistent database integration (SQLAlchemy)
 Deployment configuration
+
