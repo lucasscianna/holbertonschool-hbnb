@@ -38,12 +38,12 @@ Ce rapport documente les tests effectués sur l'API HBnB pour valider la logique
 
 ## 4. Preuve d'exécution (Console Output)
 
-```bash
+```
 root@hbnb:~/holbertonschool-hbnb/part2/hbnb# export PYTHONPATH=$(pwd)
 root@hbnb:~/holbertonschool-hbnb/part2/hbnb# python3 tests/test_api.py
-......
+...........
 ----------------------------------------------------------------------
-Ran 5 tests in 0.206s
+Ran 11 tests in 0.280s
 
 OK
 ```
