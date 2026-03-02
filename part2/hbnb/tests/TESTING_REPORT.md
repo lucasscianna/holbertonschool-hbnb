@@ -48,5 +48,6 @@ Ran 11 tests in 0.280s
 OK
 ```
 
+
 ## 5. Conclusion
 Tous les points de contrôle de la **Task 6** ont été validés. L'API rejette systématiquement les données mal formées ou de type incorrect (grâce aux vérifications `isinstance` et aux bornes numériques dans la Façade) et renvoie les codes HTTP appropriés.
