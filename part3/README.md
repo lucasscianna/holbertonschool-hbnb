@@ -1,59 +1,46 @@
-HBnB Evolution: Part 3 - Enhanced Backend & Database Integration
-📌 Présentation du Projet
+[DIÈSE] HBnB Evolution: Part 3 - Enhanced Backend & Database Integration
+
+[DIÈSE][DIÈSE] 📌 Présentation du Projet
 Bienvenue dans la troisième phase du projet HBnB. Après avoir prototypé l'application avec un stockage en mémoire, cette étape marque la transition vers un système de grade industriel. L'objectif est de sécuriser l'application via une authentification robuste et d'assurer la persistance des données grâce à une intégration SQL complète.
 
-Cette partie transforme le projet d'un simple script en une API REST sécurisée et scalable, prête pour un déploiement en production.
+[DIÈSE][DIÈSE] 🚀 Objectifs Principaux
 
-🚀 Objectifs Principaux
-1. Authentification & Autorisation (Sécurité)
-JWT (JSON Web Tokens) : Mise en œuvre de Flask-JWT-Extended pour gérer les sessions utilisateurs de manière stateless.
+Authentification & Autorisation (Sécurité)
+[ÉTOILE] JWT (JSON Web Tokens) : Mise en œuvre de Flask-JWT-Extended.
+[ÉTOILE] Sécurité des Mots de Passe : Utilisation de bcrypt.
+[ÉTOILE] Contrôle d'Accès (RBAC) : Attribut is_admin.
 
-Sécurité des Mots de Passe : Utilisation de bcrypt pour le hachage des mots de passe. Aucun mot de passe n'est stocké en clair.
+Persistance des Données (Base de données)
+[ÉTOILE] SQLAlchemy ORM : Mapping des entités.
+[ÉTOILE] Stratégie Multi-Environnement : SQLite (Dev) et MySQL (Prod).
 
-Contrôle d'Accès (RBAC) : Distinction entre les utilisateurs standards et les administrateurs via l'attribut is_admin.
+[DIÈSE][DIÈSE] 🏗️ Architecture du Système
 
-2. Persistance des Données (Base de données)
-SQLAlchemy ORM : Transition complète des listes Python vers une abstraction de base de données relationnelle.
+[DIÈSE][DIÈSE] 🛡️ Endpoints & Sécurité
 
-Stratégie Multi-Environnement :
+[DIÈSE][DIÈSE][DIÈSE] Authentification
+[BARRE] Méthode [BARRE] Endpoint [BARRE] Description [BARRE] Accès [BARRE]
+[BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE]
+[BARRE] POST [BARRE] /api/v1/auth/login [BARRE] Connexion JWT [BARRE] Public [BARRE]
+[BARRE] POST [BARRE] /api/v1/users/ [BARRE] Inscription [BARRE] Public [BARRE]
 
-Développement : Utilisation de SQLite (léger, fichier local).
+[DIÈSE][DIÈSE][DIÈSE] Opérations Protégées
+[BARRE] Méthode [BARRE] Endpoint [BARRE] Description [BARRE] Condition [BARRE]
+[BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE]
+[BARRE] POST [BARRE] /api/v1/places/ [BARRE] Créer un lieu [BARRE] Token requis [BARRE]
+[BARRE] DELETE [BARRE] /api/v1/amenities/id [BARRE] Supprimer [BARRE] Admin seul [BARRE]
 
-Production : Configuration prête pour MySQL.
+[DIÈSE][DIÈSE] 🛠️ Installation et Configuration
 
-Gestion des Relations : Mapping complexe des relations (User -> Places, Place -> Reviews, Place <-> Amenities).
+Clonage : git clone [URL]
 
-🏗️ Architecture du Système
-Schéma de la Base de Données (ER Diagram)
-Le schéma a été conçu pour garantir l'intégrité référentielle. Voici la visualisation des entités :
+Environnement : python3 -m venv venv
 
-Users : Gèrent les informations de profil et l'authentification.
+Dépendances : pip install -r requirements.txt
 
-Places : Liés à un propriétaire (User) et contiennent des avis et des commodités.
+Variables : export HBNB_TYPE_STORAGE=db
 
-Reviews : Relient un utilisateur à un lieu spécifique.
-
-Amenities : Relation "Many-to-Many" avec les lieux.
-
-📂 Structure du Répertoire
-🛡️ Endpoints & Sécurité
-Authentification
-Opérations Protégées (Exemples)
-🛠️ Installation et Configuration
-Clonage et Environnement :
-
-Dépendances :
-
-Variables d'Environnement :
-Configure ton environnement pour choisir la base de données :
-
-Lancement :
-
-🧪 Tests
-Les tests couvrent désormais la couche de persistance :
-
-Vérification que les mots de passe sont bien hachés en base.
-
-Test de l'expiration des tokens JWT.
-
-Validation des contraintes FOREIGN KEY (ex: impossible de supprimer un utilisateur s'il possède des lieux actifs sans gestion de cascade).
+[DIÈSE][DIÈSE] 🧪 Tests
+[ÉTOILE] Vérification du hachage des mots de passe.
+[ÉTOILE] Test de validité des tokens JWT.
+[ÉTOILE] Validation des contraintes FOREIGN KEY.
