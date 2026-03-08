@@ -1,46 +1,46 @@
-[DIÈSE] HBnB Evolution: Part 3 - Enhanced Backend & Database Integration
+# HBnB Evolution: Part 3 - Enhanced Backend & Database Integration
 
-[DIÈSE][DIÈSE] 📌 Présentation du Projet
-Bienvenue dans la troisième phase du projet HBnB. Après avoir prototypé l'application avec un stockage en mémoire, cette étape marque la transition vers un système de grade industriel. L'objectif est de sécuriser l'application via une authentification robuste et d'assurer la persistance des données grâce à une intégration SQL complète.
+## 📌 Présentation du Projet
+Bienvenue dans la troisième phase du projet **HBnB**. Après avoir prototypé l'application avec un stockage en mémoire, cette étape marque la transition vers un système de grade industriel. L'objectif est de sécuriser l'application via une authentification robuste et d'assurer la persistance des données grâce à une intégration SQL complète via **SQLAlchemy**.
 
-[DIÈSE][DIÈSE] 🚀 Objectifs Principaux
+---
 
-Authentification & Autorisation (Sécurité)
-[ÉTOILE] JWT (JSON Web Tokens) : Mise en œuvre de Flask-JWT-Extended.
-[ÉTOILE] Sécurité des Mots de Passe : Utilisation de bcrypt.
-[ÉTOILE] Contrôle d'Accès (RBAC) : Attribut is_admin.
+## 🚀 Objectifs Principaux
 
-Persistance des Données (Base de données)
-[ÉTOILE] SQLAlchemy ORM : Mapping des entités.
-[ÉTOILE] Stratégie Multi-Environnement : SQLite (Dev) et MySQL (Prod).
+### 🛡️ Authentification & Autorisation (Sécurité)
+* **JWT (JSON Web Tokens) :** Mise en œuvre de `Flask-JWT-Extended` pour la gestion des sessions.
+* **Sécurité des Mots de Passe :** Hachage systématique avec `bcrypt`.
+* **Contrôle d'Accès (RBAC) :** Gestion des privilèges via l'attribut `is_admin`.
 
-[DIÈSE][DIÈSE] 🏗️ Architecture du Système
+### 💾 Persistance des Données (Base de données)
+* **SQLAlchemy ORM :** Mapping objet-relationnel pour toutes les entités.
+* **Stratégie Multi-Environnement :** Utilisation de **SQLite** pour le développement et configuration de **MySQL** pour la production.
+* **Validation & Intégrité :** Mise en place de contraintes de clé étrangère (FOREIGN KEY) et de règles d'unicité.
 
-[DIÈSE][DIÈSE] 🛡️ Endpoints & Sécurité
+---
 
-[DIÈSE][DIÈSE][DIÈSE] Authentification
-[BARRE] Méthode [BARRE] Endpoint [BARRE] Description [BARRE] Accès [BARRE]
-[BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE]
-[BARRE] POST [BARRE] /api/v1/auth/login [BARRE] Connexion JWT [BARRE] Public [BARRE]
-[BARRE] POST [BARRE] /api/v1/users/ [BARRE] Inscription [BARRE] Public [BARRE]
+## 🏗️ Architecture & Arborescence du Projet
 
-[DIÈSE][DIÈSE][DIÈSE] Opérations Protégées
-[BARRE] Méthode [BARRE] Endpoint [BARRE] Description [BARRE] Condition [BARRE]
-[BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE] :--- [BARRE]
-[BARRE] POST [BARRE] /api/v1/places/ [BARRE] Créer un lieu [BARRE] Token requis [BARRE]
-[BARRE] DELETE [BARRE] /api/v1/amenities/id [BARRE] Supprimer [BARRE] Admin seul [BARRE]
+Le projet suit une structure modulaire pour séparer la logique métier, la persistance et l'API.
 
-[DIÈSE][DIÈSE] 🛠️ Installation et Configuration
 
-Clonage : git clone [URL]
 
-Environnement : python3 -m venv venv
-
-Dépendances : pip install -r requirements.txt
-
-Variables : export HBNB_TYPE_STORAGE=db
-
-[DIÈSE][DIÈSE] 🧪 Tests
-[ÉTOILE] Vérification du hachage des mots de passe.
-[ÉTOILE] Test de validité des tokens JWT.
-[ÉTOILE] Validation des contraintes FOREIGN KEY.
+```text
+hbnb/
+├── api/
+│   ├── v1/
+│   │   ├── auth/           # Gestion de la connexion et des tokens
+│   │   ├── users/          # Endpoints utilisateurs (Inscription/Profil)
+│   │   ├── places/         # Endpoints lieux (Protégés par JWT)
+│   │   └── ...
+├── models/
+│   ├── base_model.py       # Classe mère avec SQLAlchemy
+│   ├── user.py             # Modèle User avec hachage password
+│   ├── place.py            # Modèle Place avec relations
+│   ├── review.py           # Modèle Review
+│   └── amenity.py          # Modèle Amenity
+├── persistence/
+│   ├── db_repository.py    # Logique d'interaction avec la DB
+│   └── repository.py       # Interface de dépôt abstraite
+├── config.py               # Configuration (Dev vs Prod)
+└── app.py                  # Point d'entrée de l'application
