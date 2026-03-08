@@ -44,3 +44,38 @@ hbnb/
 │   └── repository.py       # Interface de dépôt abstraite
 ├── config.py               # Configuration (Dev vs Prod)
 └── app.py                  # Point d'entrée de l'application
+---
+
+## 🔐 Endpoints & Sécurité
+
+### Authentification
+| Méthode | Endpoint | Description | Accès |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/v1/auth/login` | Génération du token JWT | Public |
+| **POST** | `/api/v1/users/` | Inscription nouvel utilisateur | Public |
+
+### Opérations Protégées
+| Méthode | Endpoint | Description | Condition |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/v1/places/` | Créer un lieu | Token valide requis |
+| **PUT** | `/api/v1/places/<id>` | Modifier un lieu | Propriétaire / Admin |
+| **DELETE** | `/api/v1/amenities/<id>` | Supprimer un équipement | **Admin seul** |
+
+---
+
+## 🛠️ Installation et Configuration
+
+### 1. Clonage du dépôt
+```bash
+git clone [https://github.com/votre-repo/holbertonschool-hbnb.git](https://github.com/votre-repo/holbertonschool-hbnb.git)
+cd holbertonschool-hbnb
+
+### 2. Configuration de l'environnement
+
+```bash
+# Création et activation de l'environnement virtuel
+python3 -m venv venv
+source venv/bin/activate
+
+# Installation des dépendances
+pip install -r requirements.txt
