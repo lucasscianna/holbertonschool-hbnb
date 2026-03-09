@@ -52,4 +52,4 @@ HBnB Evolution est un projet fil rouge divisé en quatre phases majeures. L'obje
 - DevOps (Docker, Nginx).
 
 ---
-*Projet réalisé par **Lucas Scianna** et **Illan Cornibe**- Étudiants en développement logiciel à Holberton School.*
+*Projet réalisé par **Lucas Scianna** et **Ilan Cornibe**- Étudiants en développement logiciel à Holberton School.*
