@@ -44,7 +44,7 @@ hbnb/
 │   └── repository.py       # Interface de dépôt abstraite
 ├── config.py               # Configuration (Dev vs Prod)
 └── app.py                  # Point d'entrée de l'application
-end```
+```
 ---
 
 ## 🔐 Endpoints & Sécurité
@@ -88,7 +88,7 @@ Configurez le moteur de stockage pour utiliser la base de données :
 ```bash
 export HBNB_TYPE_STORAGE=db
 export JWT_SECRET_KEY=votre_cle_secrete
-
+```
 
 ## 🧪 Stratégie de Tests
 
@@ -112,7 +112,7 @@ pytest -v
 
 # Vérifier la couverture de code (si pytest-cov est installé)
 pytest --cov=app tests/
-
+```
 
 ## 📚 Ressources
 
