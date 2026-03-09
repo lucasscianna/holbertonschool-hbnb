@@ -70,7 +70,7 @@ hbnb/
 ```bash
 git clone [https://github.com/votre-repo/holbertonschool-hbnb.git](https://github.com/votre-repo/holbertonschool-hbnb.git)
 cd holbertonschool-hbnb
-
+```
 ### 2. Configuration de l'environnement
 
 ```bash
@@ -80,7 +80,7 @@ source venv/bin/activate
 
 # Installation des dépendances
 pip install -r requirements.txt
-
+```
 ### 3. Variables d'environnement
 
 Configurez le moteur de stockage pour utiliser la base de données :
