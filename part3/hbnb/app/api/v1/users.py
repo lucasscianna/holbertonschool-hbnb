@@ -1,84 +1,64 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
-api = Namespace('users', description='Opérations sur les utilisateurs')
+api = Namespace('users', description='User operations')
 
-user_model = api.model('User', {
-    'first_name': fields.String(required=True, description='Prénom'),
-    'last_name': fields.String(required=True, description='Nom'),
-    'email': fields.String(required=True, description='Adresse email'),
-    'password': fields.String(required=True, description='Mot de passe')
+# Define the data expected during registration/update
+user_request = api.model('UserRegistration', {
+    'first_name': fields.String(required=True, description='User first name'),
+    'last_name': fields.String(required=True, description='User last name'),
+    'email': fields.String(required=True, description='User email address'),
+    'password': fields.String(required=True, description='User password')
+})
+
+# Define the data returned to the client (password is excluded)
+user_response = api.model('UserResponse', {
+    'id': fields.String(description='Unique identifier'),
+    'first_name': fields.String(description='User first name'),
+    'last_name': fields.String(description='User last name'),
+    'email': fields.String(description='User email address')
 })
 
 @api.route('/')
 class UserList(Resource):
-    """
-    Gère les actions sur la collection complète des utilisateurs.
-    """
+    """Handles actions on the complete user collection."""
 
-    @api.expect(user_model, validate=True)
+    @api.expect(user_request, validate=True)
+    @api.marshal_with(user_response, code=201)
     def post(self):
-        """
-        Crée un nouvel utilisateur après validation.
-        """
+        """Creates a new user and returns the filtered public profile."""
         user_data = api.payload
         try:
             new_user = facade.create_user(user_data)
-            return {
-                'id': new_user.id,
-                'first_name': new_user.first_name,
-                'last_name': new_user.last_name,
-                'email': new_user.email
-            }, 201
+            return new_user
         except ValueError as e:
-            return {'error': str(e)}, 400
+            api.abort(400, str(e))
 
+    @api.marshal_list_with(user_response)
     def get(self):
-        """
-        Récupère tous les utilisateurs enregistrés.
-        """
-        users = facade.get_all_users()
-        return [
-            {
-                'id': u.id,
-                'first_name': u.first_name,
-                'last_name': u.last_name,
-                'email': u.email
-            } for u in users
-        ], 200
+        """Retrieves all registered users."""
+        return facade.get_all_users()
 
 @api.route('/<user_id>')
 class UserResource(Resource):
-    """
-    Gère les actions sur un utilisateur spécifique.
-    """
+    """Handles actions on a specific user."""
 
+    @api.marshal_with(user_response)
     def get(self, user_id):
-        """
-        Récupère un utilisateur précis via son identifiant unique.
-        """
+        """Retrieves a specific user by their unique identifier."""
         user = facade.get_user(user_id)
         if not user:
-            return {'error': 'Utilisateur non trouvé'}, 404
-        return {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email
-        }, 200
+            api.abort(404, "User not found")
+        return user
 
-    @api.expect(user_model, validate=True)
+    @api.expect(user_request, validate=True)
     def put(self, user_id):
-        """
-        Met à jour les informations d'un utilisateur existant.
-        """
+        """Updates an existing user's information."""
         user_data = api.payload
-        
         try:
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:
-                return {'error': 'Utilisateur non trouvé'}, 404
-            return {'message': 'Utilisateur mis à jour avec succès'}, 200
+                api.abort(404, "User not found")
+            return {'message': 'User updated successfully'}, 200
         except ValueError as e:
-            return {'error': str(e)}, 400
-    
+            api.abort(400, str(e))

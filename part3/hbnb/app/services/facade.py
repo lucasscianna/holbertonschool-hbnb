@@ -16,17 +16,20 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
-    # --- USER METHODS ---
     def create_user(self, user_data):
         if not user_data.get("first_name") or not user_data.get("last_name"):
             raise ValueError("First and last name are required")
+
         email = user_data.get("email")
         if not email or not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             raise ValueError("Invalid email format")
+
         if self.get_user_by_email(email):
             raise ValueError("Email already registered")
+
         user = User(**user_data)
         self.user_repo.add(user)
+
         return user
 
     def get_user(self, user_id):
@@ -53,23 +56,22 @@ class HBnBFacade:
         self.user_repo.update(user_id, user)
         return user
 
-    # --- PLACE METHODS ---
     def create_place(self, place_data):
         owner = self.get_user(place_data.get("owner_id"))
         if not owner: raise ValueError("Owner not found")
         if not place_data.get("title"): raise ValueError("Title is required")
         
         price = place_data.get("price")
-        # Vérification : doit être un nombre (int ou float) et positif
+
         if not isinstance(price, (int, float)) or price <= 0:
             raise ValueError("Price must be a positive number")
         
         lat = place_data.get("latitude")
         lon = place_data.get("longitude")
-        # Vérification : latitude doit être un nombre entre -90 et 90
+
         if not isinstance(lat, (int, float)) or not (-90 <= lat <= 90):
             raise ValueError("Invalid latitude")
-        # Vérification : longitude doit être un nombre entre -180 et 180
+
         if not isinstance(lon, (int, float)) or not (-180 <= lon <= 180):
             raise ValueError("Invalid longitude")
         
@@ -96,11 +98,10 @@ class HBnBFacade:
             if key in place_data: setattr(place, key, place_data[key])
         return place
 
-    # --- REVIEW METHODS ---
     def create_review(self, review_data):
         if not review_data.get("text"): raise ValueError("Review text is required")
         rating = review_data.get("rating")
-        # Vérification : rating doit être un entier strict entre 1 et 5
+
         if not isinstance(rating, int) or not (1 <= rating <= 5):
             raise ValueError("Rating must be an integer between 1 and 5")
         
@@ -132,7 +133,7 @@ class HBnBFacade:
             review.text = review_data["text"]
         if "rating" in review_data:
             rating = review_data["rating"]
-            # Vérification du type lors de la mise à jour aussi
+
             if not isinstance(rating, int) or not (1 <= rating <= 5):
                 raise ValueError("Invalid rating")
             review.rating = rating
@@ -146,7 +147,6 @@ class HBnBFacade:
         self.review_repo.delete(review_id)
         return True
 
-    # --- AMENITY METHODS ---
     def create_amenity(self, amenity_data):
         if not amenity_data.get("name"): raise ValueError("Name required")
         amenity = Amenity(name=amenity_data["name"])
