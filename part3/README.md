@@ -79,3 +79,42 @@ source venv/bin/activate
 
 # Installation des dépendances
 pip install -r requirements.txt
+
+### 3. Variables d'environnement
+
+Configurez le moteur de stockage pour utiliser la base de données :
+
+```bash
+export HBNB_TYPE_STORAGE=db
+export JWT_SECRET_KEY=votre_cle_secrete
+
+
+## 🧪 Stratégie de Tests
+
+Pour garantir la stabilité du système, les tests se concentrent sur :
+
+* **Sécurité** : Vérification que les mots de passe sont hachés en base (pas de texte clair).
+* **Authentification** : Test de validité et d'expiration des tokens JWT.
+* **Intégrité SQL** : Validation des contraintes de clés étrangères et suppression en cascade.
+* **Autorisation** : Tentative d'accès à une route Admin avec un compte utilisateur standard.
+
+### Exécution des tests
+
+Nous utilisons **pytest** pour la suite de tests. Pour les lancer, assurez-vous d'être dans votre environnement virtuel et exécutez :
+
+```bash
+# Lancer tous les tests
+pytest
+
+# Lancer avec les détails des logs
+pytest -v
+
+# Vérifier la couverture de code (si pytest-cov est installé)
+pytest --cov=app tests/
+
+
+## 📚 Ressources
+
+* [Flask-JWT-Extended Docs](https://flask-jwt-extended.readthedocs.io/)
+* [SQLAlchemy ORM Docs](https://docs.sqlalchemy.org/en/20/)
+* [Mermaid.js (ER Diagrams)](https://mermaid.js.org/syntax/entityRelationshipDiagram.html)
