@@ -44,6 +44,7 @@ hbnb/
 │   └── repository.py       # Interface de dépôt abstraite
 ├── config.py               # Configuration (Dev vs Prod)
 └── app.py                  # Point d'entrée de l'application
+end```
 ---
 
 ## 🔐 Endpoints & Sécurité
