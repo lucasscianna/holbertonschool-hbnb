@@ -38,11 +38,19 @@ class HBnBFacade:
     def get_all_users(self):
         return self.user_repo.get_all()
 
+
     def update_user(self, user_id, user_data):
         user = self.get_user(user_id)
-        if not user: return None
+        if not user: 
+            return None
+            
         for key, value in user_data.items():
-            if hasattr(user, key): setattr(user, key, value)
+            if key == "password":
+                user.hash_password(value)
+            elif hasattr(user, key):
+                setattr(user, key, value)
+        
+        self.user_repo.update(user_id, user)
         return user
 
     # --- PLACE METHODS ---
