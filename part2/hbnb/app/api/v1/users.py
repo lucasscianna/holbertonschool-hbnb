@@ -6,7 +6,7 @@ api = Namespace('users', description='Opérations sur les utilisateurs')
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='Prénom'),
     'last_name': fields.String(required=True, description='Nom'),
-    'email': fields.String(required=True, description='Adresse email')
+    'email': fields.String(required=True, description='Adresse email'),
     'password': fields.String(required=True, description='Mot de passe')
 })
 
