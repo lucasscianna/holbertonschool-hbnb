@@ -49,7 +49,7 @@ class HBnBFacade:
                 user.hash_password(value)
             elif hasattr(user, key):
                 setattr(user, key, value)
-        
+         
         self.user_repo.update(user_id, user)
         return user
 
