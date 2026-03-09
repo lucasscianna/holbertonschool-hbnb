@@ -3,39 +3,39 @@ from app.models.base_model import BaseModel
 from app import bcrypt
 
 class User(BaseModel):
-    """Représente un utilisateur du système."""
+    """Represents a user in the system."""
     _emails = set()
 
     def __init__(self, first_name, last_name, email, password, is_admin=False):
-        """Initialise un utilisateur avec validation du nom et de l'email."""
+        """Initializes a user with name, email validation, and password hashing."""
         super().__init__()
         self.first_name = self.validate_name(first_name, "First name")
         self.last_name = self.validate_name(last_name, "Last name")
         self.email = self.validate_email(email)
         self.is_admin = is_admin
-        #hashage du password dès sa création
+        # Hash the password immediately upon creation
         self.hash_password(password)
 
     def validate_name(self, value, field_name):
-        """Vérifie que le nom n'est pas vide et ne dépasse pas 50 caractères."""
+        """Ensures the name is not empty and does not exceed 50 characters."""
         if not value or len(value) > 50:
-            raise ValueError(f"{field_name} est requis (max 50 caractères).")
+            raise ValueError(f"{field_name} is required (max 50 characters).")
         return value
     
     def validate_email(self, email):
-        """Valide le format de l'email et son unicité."""
+        """Validates the email format and ensures its uniqueness."""
         email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
         if not re.match(email_regex, email):
-            raise ValueError("Format d'email invalide.")
+            raise ValueError("Invalid email format.")
         if email in User._emails:
-            raise ValueError("L'email doit être unique.")
+            raise ValueError("Email must be unique.")
         User._emails.add(email)
         return email
 
     def hash_password(self, password):
-        """Hashe le password avant de le stocker."""
+        """Hashes the password before storing it."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
-        """Vérifie si le password donné match le password hasher."""
+        """Verifies if the provided password matches the stored hashed password."""
         return bcrypt.check_password_hash(self.password, password)
