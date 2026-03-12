@@ -1,22 +1,26 @@
+from app import db
 import uuid
 from datetime import datetime
 
-class BaseModel:
+class BaseModel(db.Model):
     """Classe de base pour tous les modèles HBNB."""
 
-    def __init__(self):
-        """Initialise une nouvelle instance avec un ID unique et des horodatages."""
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    __abstract__ = True
 
-    def save(self):
-        """Met à jour l'horodatage updated_at au moment actuel."""
-        self.updated_at = datetime.now()
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def __init__(self, **kwargs):
+        """Initialise une nouvelle instance avec un ID unique et des horodatages."""
+        super().__init__(**kwargs)
+        if not self.id:
+            self.id = str(uuid.uuid4())
 
     def update(self, data):
         """Met à jour les attributs de l'instance à partir d'un dictionnaire."""
+        protected_fields = ['id', 'created_at', 'updated_at']
+        
         for key, value in data.items():
-            if hasattr(self, key):
+            if hasattr(self, key) and key not in protected_fields:
                 setattr(self, key, value)
-        self.save()
