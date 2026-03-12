@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
 
 api = Namespace('users', description='Opérations sur les utilisateurs')
@@ -17,13 +17,23 @@ class UserList(Resource):
     Gère les actions sur la collection complète des utilisateurs.
     """
 
-    @api.expect(user_model, validate=True)
+   @api.expect(user_model, validate=True)
+    @jwt_required()
     def post(self):
         """
-        Crée un nouvel utilisateur après validation.
+        Crée un nouvel utilisateur (Réservé aux Admins).
         """
+        # Vérification Admin
+        claims = get_jwt()
+        if not claims.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         user_data = api.payload
         try:
+            # Vérifier si l'email existe déjà
+            if facade.get_user_by_email(user_data['email']):
+                return {'error': 'Email already registered'}, 400
+                
             new_user = facade.create_user(user_data)
             return {
                 'id': new_user.id,
@@ -68,22 +78,28 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
-    @jwt_required()
+   @jwt_required()
     @api.expect(user_model, validate=True)
     def put(self, user_id):
         """
-        Met à jour les informations d'un utilisateur existant.
+        Met à jour un utilisateur (Admin peut tout modifier, User limité à son profil).
         """
+        claims = get_jwt()
         current_user_id = get_jwt_identity()
+        is_admin = claims.get('is_admin', False)
         user_data = api.payload
         
-        if user_id != current_user_id:
+        # Si PAS admin ET que l'ID ne correspond pas -> Interdit
+        if not is_admin and user_id != current_user_id:
             return {'error': 'Action non autorisée'}, 403
 
-        if 'email' in user_data or 'password' in user_data:
-            return {'error': 'Vous ne pouvez pas modifier l\'email ou le mot de passe'}, 400
+        # Si PAS admin, on interdit la modif email/password
+        if not is_admin:
+            if 'email' in user_data or 'password' in user_data:
+                return {'error': 'Seul un administrateur peut modifier l\'email ou le mot de passe'}, 400
         
         try:
+            # Si c'est un admin qui change l'email la facade doit vérifier l'unicité
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:
                 return {'error': 'Utilisateur non trouvé'}, 404

@@ -13,7 +13,7 @@ class User(BaseModel):
         self.last_name = self.validate_name(last_name, "Last name")
         self.email = self.validate_email(email)
         self.is_admin = is_admin
-        #hashage du password dès sa création
+        #hashage du password dès sa création 
         self.hash_password(password)
 
     def validate_name(self, value, field_name):
