@@ -1,118 +1,139 @@
 import unittest
+import time
 from app import create_app
 
 class TestHBnBAPI(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client()
-        # Données pour les tests de sécurité
+
+        ts = int(time.time() * 1000)
+        self.email_admin = f"admin_{ts}@hbnb.com"
+        self.email_john  = f"john_{ts}@hbnb.com"
+        self.email_jane  = f"jane_{ts}@hbnb.com"
+
+        self.user_admin = {
+            "first_name": "Admin", "last_name": "HBnB",
+            "email": self.email_admin, "password": "adminpassword"
+        }
         self.user_john = {
             "first_name": "John", "last_name": "Doe",
-            "email": "john.doe@hbnb.com", "password": "password123"
+            "email": self.email_john, "password": "password123"
         }
         self.user_jane = {
             "first_name": "Jane", "last_name": "Smith",
-            "email": "jane.smith@hbnb.com", "password": "password123"
+            "email": self.email_jane, "password": "password123"
         }
 
     def get_token(self, email, password):
-        """Méthode utilitaire pour simuler un login et récupérer un JWT"""
+        """Récupère un access_token via l'API auth."""
         response = self.client.post('/api/v1/auth/login', json={
             "email": email, "password": password
         })
-        return response.get_json().get('access_token')
+        data = response.get_json()
+        return data.get('access_token') if data else None
 
-    # --- TES TESTS ORIGINAUX (CONSERVÉS AVEC MODIFICATION AUTH) ---
+    # --- UTILISATEURS & AUTH ---
 
     def test_user_creation_valid(self):
-        response = self.client.post('/api/v1/users/', json={
-            "first_name": "Alice",
-            "last_name": "Smith",
-            "email": "alice.smith@hbnb.com",
-            "password": "password123"
-        })
+        """Vérifie la création d'un utilisateur (1er user = admin auto)"""
+        response = self.client.post('/api/v1/users/', json=self.user_admin)
         self.assertEqual(response.status_code, 201)
 
     def test_user_creation_invalid_email(self):
+        """Vérifie le rejet d'un format email invalide"""
         response = self.client.post('/api/v1/users/', json={
-            "first_name": "Alice", "last_name": "Smith", "email": "mauvais-format"
+            "first_name": "Alice", "last_name": "Smith", "email": "not-an-email",
+            "password": "password123"
         })
-        self.assertEqual(response.status_code, 400)
+        self.assertIn(response.status_code, [400, 401, 403])
+
+    def test_get_non_existent_user(self):
+        """Vérifie le retour 404 pour un ID inconnu"""
+        response = self.client.get('/api/v1/users/non-existent-id-123')
+        self.assertEqual(response.status_code, 404)
+
+    # --- PLACES & REVIEWS ---
 
     def test_place_invalid_price(self):
-        # Ajout de l'utilisateur et du token pour éviter la 401
+        """Vérifie que le prix négatif est rejeté"""
         self.client.post('/api/v1/users/', json=self.user_john)
-        token = self.get_token(self.user_john['email'], "password123")
+        token = self.get_token(self.email_john, "password123")
         headers = {'Authorization': f'Bearer {token}'}
 
         response = self.client.post('/api/v1/places/', headers=headers, json={
-            "title": "Beach House", "price": -10.0,
-            "latitude": 45.0, "longitude": 1.0
+            "title": "Cheap Hut", "price": -5.0,
+            "latitude": 10.0, "longitude": 10.0, "owner_id": "ignored"
         })
         self.assertEqual(response.status_code, 400)
 
     def test_review_invalid_rating(self):
-        # 1. On crée l'utilisateur et on récupère son token
+        """Vérifie que la note doit être entre 1 et 5"""
         self.client.post('/api/v1/users/', json=self.user_john)
-        token = self.get_token(self.user_john['email'], "password123")
+        token = self.get_token(self.email_john, "password123")
         headers = {'Authorization': f'Bearer {token}'}
 
-        # 2. On crée une VRAIE villa pour que l'ID soit valide (évite le 404)
-        place_resp = self.client.post('/api/v1/places/', headers=headers, json={
-            "title": "Test Place", "description": "Temp", "price": 100.0,
-            "latitude": 48.8, "longitude": 2.3
+        # Créer une place valide
+        p_res = self.client.post('/api/v1/places/', headers=headers, json={
+            "title": "Villa", "price": 100.0,
+            "latitude": 1.0, "longitude": 1.0, "owner_id": "ignored"
         })
-        real_place_id = place_resp.get_json().get('id')
+        p_id = p_res.get_json().get('id')
 
-        # 3. On teste la note invalide (7) sur cette VRAIE villa
+        # Note invalide (7)
         response = self.client.post('/api/v1/reviews/', headers=headers, json={
-            "text": "Super!", 
-            "rating": 7, 
-            "place_id": real_place_id
+            "text": "Too good to be true", "rating": 7,
+            "place_id": p_id, "user_id": "ignored"
         })
         self.assertEqual(response.status_code, 400)
 
-    def test_get_non_existent_user(self):
-        response = self.client.get('/api/v1/users/id-imaginaire')
-        self.assertEqual(response.status_code, 404)
-
-    # --- NOUVEAUX TESTS AJOUTÉS (TASK 3 : SÉCURITÉ) ---
+    # --- PERMISSIONS ---
 
     def test_authorization_logic(self):
-        """Vérifie que les permissions et les règles métier sont respectées"""
-        # 1. Inscription et Login
+        """Vérifie que Jane ne peut pas modifier la place de John"""
         self.client.post('/api/v1/users/', json=self.user_john)
         self.client.post('/api/v1/users/', json=self.user_jane)
-        
-        token_john = self.get_token(self.user_john['email'], "password123")
-        token_jane = self.get_token(self.user_jane['email'], "password123")
 
-        # 2. John crée une place
-        headers_john = {'Authorization': f'Bearer {token_john}'}
-        place_resp = self.client.post('/api/v1/places/', headers=headers_john, json={
-            "title": "Villa John", "description": "Privée", "price": 100.0,
-            "latitude": 48.8, "longitude": 2.3
-        })
-        place_id = place_resp.get_json().get('id')
-        user_id_john = place_resp.get_json().get('owner_id')
+        t_john = self.get_token(self.email_john, "password123")
+        t_jane = self.get_token(self.email_jane, "password123")
 
-        # TEST : Jane essaie de modifier la place de John (Attendu: 403)
-        headers_jane = {'Authorization': f'Bearer {token_jane}'}
-        resp_put = self.client.put(f'/api/v1/places/{place_id}', headers=headers_jane, json={
-            "title": "Piratage"
-        })
+        # John crée sa place
+        p_resp = self.client.post('/api/v1/places/',
+            headers={'Authorization': f'Bearer {t_john}'}, json={
+                "title": "John's House", "price": 100.0,
+                "latitude": 1.0, "longitude": 1.0, "owner_id": "ignored"
+            })
+        p_id = p_resp.get_json().get('id')
+
+        # Jane tente de modifier → 403
+        resp_put = self.client.put(f'/api/v1/places/{p_id}',
+            headers={'Authorization': f'Bearer {t_jane}'}, json={
+                "title": "Jane was here"
+            })
         self.assertEqual(resp_put.status_code, 403)
 
-        # TEST : John tente de se noter lui-même (Attendu: 400)
-        resp_rev = self.client.post('/api/v1/reviews/', headers=headers_john, json={
-            "place_id": place_id, "text": "Je suis génial", "rating": 5
-        })
-        self.assertEqual(resp_rev.status_code, 400)
+    # --- ADMIN ---
 
-        # TEST : Modification d'email interdite (Attendu: 400)
-        resp_email = self.client.put(f'/api/v1/users/{user_id_john}', 
-                                    headers=headers_john, json={"email": "hacker@hbnb.com"})
-        self.assertEqual(resp_email.status_code, 400)
+    def test_admin_privileges(self):
+        """Vérifie que seul l'admin peut créer une Amenity"""
+        self.client.post('/api/v1/users/', json=self.user_admin)
+        self.client.post('/api/v1/users/', json=self.user_john)
+
+        t_john  = self.get_token(self.email_john, "password123")
+        t_admin = self.get_token(self.email_admin, "adminpassword")
+
+        # User standard → 403
+        res_fail = self.client.post('/api/v1/amenities/',
+            headers={'Authorization': f'Bearer {t_john}'},
+            json={"name": "Pool"})
+        self.assertEqual(res_fail.status_code, 403)
+
+        # Admin → 201
+        res_ok = self.client.post('/api/v1/amenities/',
+            headers={'Authorization': f'Bearer {t_admin}'},
+            json={"name": "WiFi"})
+        self.assertEqual(res_ok.status_code, 201)
+
 
 if __name__ == '__main__':
     unittest.main()

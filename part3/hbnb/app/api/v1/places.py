@@ -4,7 +4,6 @@ from app.services import facade
 
 api = Namespace('places', description='Place operations')
 
-# Modèles pour l'imbrication
 amenity_model = api.model('PlaceAmenity', {
     'id': fields.String(),
     'name': fields.String()
@@ -43,7 +42,6 @@ class PlaceList(Resource):
             current_user_id = get_jwt_identity()
             data = api.payload
             data['owner_id'] = current_user_id
-            
             new_place = facade.create_place(data)
             return {'id': new_place.id, 'title': new_place.title, 'owner_id': new_place.owner.id}, 201
         except ValueError as e:
@@ -56,7 +54,8 @@ class PlaceList(Resource):
 class PlaceResource(Resource):
     def get(self, place_id):
         place = facade.get_place(place_id)
-        if not place: return {'error': 'Place not found'}, 404
+        if not place:
+            return {'error': 'Place not found'}, 404
         return {
             'id': place.id, 'title': place.title, 'description': place.description,
             'price': place.price, 'latitude': place.latitude, 'longitude': place.longitude,
@@ -66,47 +65,47 @@ class PlaceResource(Resource):
         }, 200
 
     @jwt_required()
-    @api.expect(place_model, validate=True)
     def put(self, place_id):
-        """Modifier une Villa (Propriétaire ou Admin)"""
         claims = get_jwt()
         current_user_id = get_jwt_identity()
         is_admin = claims.get('is_admin', False)
 
         place = facade.get_place(place_id)
         if not place:
-            return {'error': 'Villa non trouvée'}, 404
-        
-        # Bypass Admin : On refuse si PAS admin ET PAS le propriétaire
+            return {'error': 'Place not found'}, 404
+
         if not is_admin and place.owner.id != current_user_id:
             return {'error': 'Action non autorisée'}, 403
 
         data = api.payload
-        facade.update_place(place_id, data)
-        return {'message': 'Villa mise à jour avec succès'}, 200
+        if not data:
+            return {'error': 'Données manquantes'}, 400
+
+        try:
+            facade.update_place(place_id, data)
+            return {'message': 'Place mise à jour avec succès'}, 200
+        except ValueError as e:
+            return {'error': str(e)}, 400
 
     @jwt_required()
     def delete(self, place_id):
-        """Supprimer une Villa (Propriétaire ou Admin)"""
         claims = get_jwt()
         current_user_id = get_jwt_identity()
         is_admin = claims.get('is_admin', False)
 
         place = facade.get_place(place_id)
         if not place:
-            return {'error': 'Villa non trouvée'}, 404
+            return {'error': 'Place not found'}, 404
 
-        # Bypass Admin : On refuse si PAS admin ET PAS le propriétaire
         if not is_admin and place.owner.id != current_user_id:
             return {'error': 'Action non autorisée'}, 403
 
         facade.delete_place(place_id)
-        return {'message': 'Villa supprimée avec succès'}, 200
+        return {'message': 'Place supprimée avec succès'}, 200
 
 @api.route('/<place_id>/reviews')
 class PlaceReviewList(Resource):
     def get(self, place_id):
-        """Get all reviews for a specific place"""
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404

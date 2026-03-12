@@ -12,12 +12,12 @@ api = Api(
     blueprint,
     title='HBnB API',
     version='1.0',
-    description='API de l’application HBnB',
+    description="API de l'application HBnB",
     doc='/api/v1/'
 )
 
 api.add_namespace(users_ns, path='/users')
+api.add_namespace(auth_ns, path='/auth')
 api.add_namespace(amenities_ns, path='/amenities')
 api.add_namespace(places_ns, path='/places')
 api.add_namespace(reviews_ns, path='/reviews')
-api.add_namespace(auth_ns, path='/auth')
