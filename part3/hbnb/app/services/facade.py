@@ -1,9 +1,11 @@
 import re
-from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review
 from app.models.amenity import Amenity
+
+from app.persistence.user_repository import UserRepository
+from app.persistence.repository import InMemoryRepository
 
 class HBnBFacade:
     """
@@ -11,49 +13,52 @@ class HBnBFacade:
     """
 
     def __init__(self):
-        self.user_repo = InMemoryRepository()
+        self.user_repo = UserRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
-    def create_user(self, user_data):
-        if not user_data.get("first_name") or not user_data.get("last_name"):
-            raise ValueError("First and last name are required")
 
+    def create_user(self, user_data):
+        """Crée un utilisateur, hache son mot de passe et l'enregistre en base."""
         email = user_data.get("email")
+
         if not email or not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             raise ValueError("Invalid email format")
 
         if self.get_user_by_email(email):
             raise ValueError("Email already registered")
-
+        
+        password = user_data.pop("password")
         user = User(**user_data)
-        self.user_repo.add(user)
+        user.hash_password(password)
 
+        self.user_repo.add(user)
         return user
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        return next((u for u in self.user_repo.get_all() if u.email == email), None)
+        """Utilise la méthode optimisée du UserRepository SQL."""
+        return self.user_repo.get_user_by_email(email)
 
     def get_all_users(self):
         return self.user_repo.get_all()
 
-
     def update_user(self, user_id, user_data):
+        """Met à jour un utilisateur et gère le hachage si le mot de passe change."""
         user = self.get_user(user_id)
         if not user: 
             return None
             
-        for key, value in user_data.items():
-            if key == "password":
-                user.hash_password(value)
-            elif hasattr(user, key):
-                setattr(user, key, value)
+        if "password" in user_data:
+            password = user_data.pop("password")
+            user.hash_password(password)
         
-        self.user_repo.update(user_id, user)
+        user.update(user_data)
+        
+        self.user_repo.update(user_id, user_data)
         return user
 
     def create_place(self, place_data):
