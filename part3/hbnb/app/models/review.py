@@ -3,16 +3,26 @@ from app.models.user import User
 from app.models.place import Place
 
 class Review(BaseModel):
-    def __init__(self, text, rating, place, user):
-        super().__init__()
+    __tablename__ = 'reviews'
 
-        self.text = self.validate_texte(text)
-        self.rating = self.validate_rating(rating)
-        self.place = self.validate_place(place)
-        self.user = self.validate_user(user)
-
-        place.add_review(self)
+    text = db.Column(db.String(1000), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
     
+    def __init__(self, **kwargs):
+        place = kwargs.pop('place', None)
+        user = kwargs.pop('user', None)
+
+        super().__init__(**kwargs)
+
+        self.validate_texte(self.text)
+        self.validate_rating(self.rating)
+
+        self.place = self.validate_place(place) if place else None
+        self.user = self.validate_user(user) if user else None
+
+        if self.place and hasattr(self.place, 'add_review'):
+            self.place.add_review(self)
+
     def validate_texte(self, text):
         if not text:
             raise ValueError("Review text is requiered.")

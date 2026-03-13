@@ -75,7 +75,7 @@ class InMemoryRepository(Repository):
 
     def __init__(self):
         """Initialise le stockage interne sous forme de dictionnaire."""
-        self._storage = {}
+        super().__init__(Amenity)
 
     def add(self, obj):
         """Ajoute un objet au dictionnaire interne en utilisant son ID."""

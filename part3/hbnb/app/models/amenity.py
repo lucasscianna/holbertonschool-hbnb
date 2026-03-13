@@ -1,9 +1,15 @@
 from app.models.base_model import BaseModel
+from app import db
 
 class Amenity(BaseModel):
-    def __init__(self, name):
-        super().__init__()
-        self.name = self.validate_name(name)
+    __tablename__ = 'amenities'
+
+    name = db.Column(db.String(50), nullable=False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.name = self.validate_name(self.name)
 
     def validate_name(self, name):
         if not name or len(name) > 50:

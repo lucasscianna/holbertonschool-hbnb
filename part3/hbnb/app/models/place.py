@@ -1,18 +1,29 @@
 from app.models.base_model import BaseModel
 from app.models.user import User
+from app import db
 
 class Place(BaseModel):
+    __tablename__= 'places'
     """Représente un logement disponible à la location."""
 
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(500))
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+
+    def __init__(self, **kwargs):
         """Initialise un logement avec ses coordonnées et son propriétaire."""
-        super().__init__()
-        self.title = self.validate_title(title)
-        self.description = description
-        self.price = self.validate_price(price)
-        self.latitude = self.validate_latitude(latitude)
-        self.longitude = self.validate_longitude(longitude)
-        self.owner = self.validate_owner(owner)
+        owner = kwargs.get('owner')
+
+        super().__init__(**kwargs)
+
+        self.validate_title(self.title)
+        self.validate_price(self.price)
+        self.validate_latitude(self.latitude)
+        self.validate_longitude(self.longitude)
+
+        self.owner = self.validate_owner(owner) if owner else None
         self.reviews = []
         self.amenities = []
 
