@@ -45,8 +45,8 @@ erDiagram
 ### Symboles de relation
 | Notation | Signification |
 |---|---|
-| `\|\|` | Exactement **un** (obligatoire) |
-| `o{` | **Zéro ou plusieurs** (optionnel) |
+| `\|\|` | Exactement **un** |
+| `o{` | **Zéro ou plusieurs** |
 | `\|\|--o{` | Un à plusieurs |
 
 ### Clés
