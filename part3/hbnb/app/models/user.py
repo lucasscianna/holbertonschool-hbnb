@@ -1,41 +1,41 @@
 import re
+from app import db, bcrypt
 from app.models.base_model import BaseModel
-from app import bcrypt
+from sqlalchemy.orm import validates
 
 class User(BaseModel):
-    """Représente un utilisateur du système."""
-    _emails = set()
+    __tablename__ = 'users'
 
-    def __init__(self, first_name, last_name, email, password, is_admin=False):
-        """Initialise un utilisateur avec validation du nom et de l'email."""
-        super().__init__()
-        self.first_name = self.validate_name(first_name, "First name")
-        self.last_name = self.validate_name(last_name, "Last name")
-        self.email = self.validate_email(email)
-        self.is_admin = is_admin
-        #hashage du password dès sa création 
-        self.hash_password(password)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name  = db.Column(db.String(50), nullable=False)
+    email      = db.Column(db.String(120), nullable=False, unique=True)
+    password   = db.Column(db.String(128), nullable=False)
+    is_admin   = db.Column(db.Boolean, default=False)
 
-    def validate_name(self, value, field_name):
-        """Vérifie que le nom n'est pas vide et ne dépasse pas 50 caractères."""
+    # ── Relations ajoutées T8 ──
+    places  = db.relationship('Place', backref='owner', lazy=True)
+    reviews = db.relationship('Review', backref='user', lazy=True)
+
+    @validates('first_name')
+    def validate_first_name(self, key, value):
         if not value or len(value) > 50:
-            raise ValueError(f"{field_name} est requis (max 50 caractères).")
+            raise ValueError("First name est requis (max 50 caractères).")
         return value
-    
-    def validate_email(self, email):
-        """Valide le format de l'email et son unicité."""
-        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-        if not re.match(email_regex, email):
+
+    @validates('last_name')
+    def validate_last_name(self, key, value):
+        if not value or len(value) > 50:
+            raise ValueError("Last name est requis (max 50 caractères).")
+        return value
+
+    @validates('email')
+    def validate_email(self, key, value):
+        if not value or not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", value):
             raise ValueError("Format d'email invalide.")
-        if email in User._emails:
-            raise ValueError("L'email doit être unique.")
-        User._emails.add(email)
-        return email
+        return value
 
     def hash_password(self, password):
-        """Hashe le password avant de le stocker."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
-        """Vérifie si le password donné match le password hasher."""
         return bcrypt.check_password_hash(self.password, password)

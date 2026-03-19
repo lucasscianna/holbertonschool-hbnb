@@ -86,7 +86,12 @@ class UserResource(Resource):
                 return {'error': 'Email already in use'}, 400
 
         try:
-            facade.update_user(user_id, user_data)
-            return {'message': 'Utilisateur mis à jour avec succès'}, 200
+            updated_user = facade.update_user(user_id, user_data)  #récupère l'objet
+            return {
+                'id': updated_user.id,
+                'first_name': updated_user.first_name,
+                'last_name': updated_user.last_name,
+                'email': updated_user.email
+            }, 200  #retourne les données au lieu du message
         except ValueError as e:
             return {'error': str(e)}, 400

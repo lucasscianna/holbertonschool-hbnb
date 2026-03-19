@@ -1,5 +1,6 @@
 import re
 from app.persistence.repository import InMemoryRepository
+from app.persistence.user_repository import UserRepository
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review
@@ -7,7 +8,7 @@ from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = InMemoryRepository()
+        self.user_repo = UserRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
@@ -20,9 +21,17 @@ class HBnBFacade:
             raise ValueError("Invalid email format")
         if self.get_user_by_email(email):
             raise ValueError("Email already registered")
+
         all_users = self.user_repo.get_all()
-        user_data['is_admin'] = (len(all_users) == 0)
-        user = User(**user_data)
+        is_admin = (len(all_users) == 0)
+
+        user = User(
+            first_name=user_data['first_name'],
+            last_name=user_data['last_name'],
+            email=user_data['email'],
+            is_admin=is_admin
+        )
+        user.hash_password(user_data['password'])
         self.user_repo.add(user)
         return user
 
@@ -30,7 +39,7 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        return next((u for u in self.user_repo.get_all() if u.email == email), None)
+        return self.user_repo.get_user_by_email(email)
 
     def get_all_users(self):
         return self.user_repo.get_all()
@@ -44,7 +53,8 @@ class HBnBFacade:
                 user.hash_password(value)
             elif hasattr(user, key):
                 setattr(user, key, value)
-        self.user_repo.update(user_id, user)
+        from app import db
+        db.session.commit()
         return user
 
     def create_place(self, place_data):

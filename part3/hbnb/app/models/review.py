@@ -1,34 +1,25 @@
+from app import db
 from app.models.base_model import BaseModel
-from app.models.user import User
-from app.models.place import Place
+from sqlalchemy.orm import validates
 
 class Review(BaseModel):
-    def __init__(self, text, rating, place, user):
-        super().__init__()
+    __tablename__ = 'reviews'
 
-        self.text = self.validate_texte(text)
-        self.rating = self.validate_rating(rating)
-        self.place = self.validate_place(place)
-        self.user = self.validate_user(user)
+    text   = db.Column(db.String(1000), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
 
-        place.add_review(self)
-    
-    def validate_texte(self, text):
-        if not text:
-            raise ValueError("Review text is requiered.")
-        return text
-    
-    def validate_rating(self, rating):
-        if not (1 <= rating <= 5):
+    # ── FK ajoutées T8 ──
+    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
+    user_id  = db.Column(db.String(36), db.ForeignKey('users.id'),  nullable=False)
+
+    @validates('text')
+    def validate_text(self, key, value):
+        if not value:
+            raise ValueError("Review text is required.")
+        return value
+
+    @validates('rating')
+    def validate_rating(self, key, value):
+        if not isinstance(value, int) or not (1 <= value <= 5):
             raise ValueError("Rating must be between 1 and 5.")
-        return rating
-    
-    def validate_place(self, place):
-        if not isinstance(place, Place):
-            raise ValueError("Place must be a Place instance.")
-        return place
-    
-    def validate_user(self, user):
-        if not isinstance(user, User):
-            raise ValueError("User must be a User instance.")
-        return user
+        return value

@@ -9,7 +9,11 @@ db = SQLAlchemy()
 
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
-    app.config.from_object(config_class)
+
+    if isinstance(config_class, str):
+        app.config.from_object(config_class)
+    else:
+        app.config.from_object(config_class)
 
     bcrypt.init_app(app)
     jwt.init_app(app)
@@ -17,5 +21,12 @@ def create_app(config_class="config.DevelopmentConfig"):
 
     from app.api.v1 import blueprint as api_v1
     app.register_blueprint(api_v1)
+
+    with app.app_context():
+        from app.models.user import User
+        from app.models.place import Place
+        from app.models.review import Review
+        from app.models.amenity import Amenity
+        db.create_all()
 
     return app

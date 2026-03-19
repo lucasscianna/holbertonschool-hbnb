@@ -1,55 +1,64 @@
+from app import db
 from app.models.base_model import BaseModel
-from app.models.user import User
+from sqlalchemy.orm import validates
+
+# ── Table d'association Many-to-Many Place <-> Amenity ──
+place_amenity = db.Table('place_amenity',
+    db.Column('place_id',   db.String(36), db.ForeignKey('places.id'),    primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
+)
 
 class Place(BaseModel):
-    """Représente un logement disponible à la location."""
+    __tablename__ = 'places'
+
+    title       = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(1000), nullable=True)
+    price       = db.Column(db.Float, nullable=False)
+    latitude    = db.Column(db.Float, nullable=False)
+    longitude   = db.Column(db.Float, nullable=False)
+
+    # ── Relations ajoutées T8 ──
+    owner_id  = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    reviews   = db.relationship('Review', backref='place', lazy=True)
+    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery',
+                                backref=db.backref('places', lazy=True))
 
     def __init__(self, title, description, price, latitude, longitude, owner):
-        """Initialise un logement avec ses coordonnées et son propriétaire."""
         super().__init__()
-        self.title = self.validate_title(title)
+        self.title       = title
         self.description = description
-        self.price = self.validate_price(price)
-        self.latitude = self.validate_latitude(latitude)
-        self.longitude = self.validate_longitude(longitude)
-        self.owner = self.validate_owner(owner)
-        self.reviews = []
-        self.amenities = []
+        self.price       = price
+        self.latitude    = latitude
+        self.longitude   = longitude
+        self.owner_id    = owner.id
+        self.owner       = owner
 
-    def validate_title(self, title):
-        """Valide que le titre n'est pas vide et ne dépasse pas 100 caractères."""
-        if not title or len(title) > 100:
+    @validates('title')
+    def validate_title(self, key, value):
+        if not value or len(value) > 100:
             raise ValueError("Le titre est requis (max 100 caractères).")
-        return title 
+        return value
 
-    def validate_price(self, price):
-        """Vérifie que le prix est un nombre positif."""
-        if price <= 0:
+    @validates('price')
+    def validate_price(self, key, value):
+        if value <= 0:
             raise ValueError("Le prix doit être positif.")
-        return price
+        return value
 
-    def validate_latitude(self, lat):
-        """Vérifie que la latitude est comprise entre -90 et 90."""
-        if not (-90.0 <= lat <= 90.0):
+    @validates('latitude')
+    def validate_latitude(self, key, value):
+        if not (-90.0 <= value <= 90.0):
             raise ValueError("La latitude doit être entre -90 et 90.")
-        return lat
+        return value
 
-    def validate_longitude(self, lon):
-        """Vérifie que la longitude est comprise entre -180 et 180."""
-        if not (-180.0 <= lon <= 180.0):
+    @validates('longitude')
+    def validate_longitude(self, key, value):
+        if not (-180.0 <= value <= 180.0):
             raise ValueError("La longitude doit être entre -180 et 180.")
-        return lon
-
-    def validate_owner(self, owner):
-        """Vérifie que le propriétaire est bien une instance de la classe User."""
-        if not isinstance(owner, User):
-            raise ValueError("Le propriétaire doit être une instance de User.")
-        return owner
+        return value
 
     def add_review(self, review):
-        """Ajoute un avis à la liste des avis du logement."""
         self.reviews.append(review)
 
     def add_amenity(self, amenity):
-        """Ajoute un équipement à la liste des équipements du logement."""
         self.amenities.append(amenity)
