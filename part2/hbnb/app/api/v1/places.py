@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 api = Namespace('places', description='Place operations')
@@ -35,10 +36,15 @@ place_model = api.model('Place', {
 
 @api.route('/')
 class PlaceList(Resource):
+    @jwt_required()
     @api.expect(place_model)
     def post(self):
         try:
-            new_place = facade.create_place(api.payload)
+            current_user_id = get_jwt_identity()
+            data = api.payload
+            data['owner_id'] = current_user_id
+            
+            new_place = facade.create_place(data)
             return {'id': new_place.id, 'title': new_place.title, 'owner_id': new_place.owner.id}, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -59,8 +65,18 @@ class PlaceResource(Resource):
             'reviews': [{'id': r.id, 'text': r.text, 'rating': r.rating} for r in place.reviews]
         }, 200
 
+    @jwt_required()
     @api.expect(place_model)
     def put(self, place_id):
+        current_user_id = get_jwt_identity()
+        place = facade.get_place(place_id)
+        
+        if not place:
+            return {'error': 'Place not found'}, 404
+            
+        if place.owner.id != current_user_id:
+            return {'error': 'Unauthorized action'}, 403
+            
         if not facade.update_place(place_id, api.payload):
             return {'error': 'Place not found'}, 404
         return {'message': 'Place updated successfully'}, 200

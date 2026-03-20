@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 api = Namespace('users', description='Opérations sur les utilisateurs')
@@ -6,7 +7,8 @@ api = Namespace('users', description='Opérations sur les utilisateurs')
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='Prénom'),
     'last_name': fields.String(required=True, description='Nom'),
-    'email': fields.String(required=True, description='Adresse email')
+    'email': fields.String(required=True, description='Adresse email'),
+    'password': fields.String(required=True, description='Mot de passe')
 })
 
 @api.route('/')
@@ -66,12 +68,20 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
+    @jwt_required()
     @api.expect(user_model, validate=True)
     def put(self, user_id):
         """
         Met à jour les informations d'un utilisateur existant.
         """
+        current_user_id = get_jwt_identity()
         user_data = api.payload
+        
+        if user_id != current_user_id:
+            return {'error': 'Action non autorisée'}, 403
+
+        if 'email' in user_data or 'password' in user_data:
+            return {'error': 'Vous ne pouvez pas modifier l\'email ou le mot de passe'}, 400
         
         try:
             updated_user = facade.update_user(user_id, user_data)
@@ -80,4 +90,3 @@ class UserResource(Resource):
             return {'message': 'Utilisateur mis à jour avec succès'}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
-    
