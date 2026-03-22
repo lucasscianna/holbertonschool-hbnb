@@ -1,7 +1,3 @@
--- ============================================================
--- HBnB — Données initiales
--- ============================================================
-
 -- Admin user (password = admin1234 hashé avec bcrypt)
 INSERT INTO users (id, first_name, last_name, email, password, is_admin)
 VALUES (
