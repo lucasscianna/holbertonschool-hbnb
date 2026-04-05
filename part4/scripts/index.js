@@ -1,49 +1,51 @@
 // index.js
-const placesList = document.getElementById('places-list');
-const countryFilter = document.getElementById('country-filter');
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Task 3: Redirect to login if not authenticated
-    if (!getCookie('token')) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    fetchPlaces();
+    checkAuthentication();
 });
 
-async function fetchPlaces() {
+function checkAuthentication() {
+    const token = getCookie('token');
+    const loginLink = document.getElementById('login-link');
+
+    if (!token) {
+        if (loginLink) loginLink.style.display = 'block';
+    } else {
+        if (loginLink) loginLink.style.display = 'none';
+        // Fetch places data if the user is authenticated
+        fetchPlaces(token);
+    }
+}
+
+async function fetchPlaces(token) {
     try {
         const response = await fetch(`${API_BASE_URL}/places`, {
+            method: 'GET',
             headers: {
-                'Authorization': `Bearer ${getCookie('token')}`
-            }
-        });
-        const places = await response.json();
-        
-        displayPlaces(places);
-        populateCountries(places);
-        
-        countryFilter.addEventListener('change', () => {
-            const selectedCountry = countryFilter.value;
-            if (selectedCountry === 'All') {
-                displayPlaces(places);
-            } else {
-                const filtered = places.filter(p => p.country === selectedCountry);
-                displayPlaces(filtered);
+                // Include the token in the Authorization header
+                'Authorization': `Bearer ${token}`
             }
         });
 
+        if (response.ok) {
+            const places = await response.json();
+            displayPlaces(places);
+            setupPriceFilter(places);
+        } else {
+            console.error('Failed to fetch places:', response.statusText);
+        }
     } catch (err) {
-        placesList.innerHTML = '<p style="color: red;">Error loading places. Make sure the API is running.</p>';
+        console.error('Error fetching places:', err);
+        document.getElementById('places-list').innerHTML = '<p style="color: red;">Error loading places. Ensure API is running.</p>';
     }
 }
 
 function displayPlaces(places) {
-    placesList.innerHTML = '';
-    
+    const placesList = document.getElementById('places-list');
+    placesList.innerHTML = ''; // Clear current content
+
     if (places.length === 0) {
-        placesList.innerHTML = '<p>No places found.</p>';
+        placesList.innerHTML = '<p>No places found within this price range.</p>';
         return;
     }
 
@@ -53,25 +55,25 @@ function displayPlaces(places) {
         card.innerHTML = `
             <h3>${place.title}</h3>
             <p class="price">$${place.price} per night</p>
-            <p>Location: ${place.country}</p>
+            <p>Location: ${place.country || 'Unknown'}</p>
             <a href="place.html?id=${place.id}" class="details-button">View Details</a>
         `;
         placesList.appendChild(card);
     });
 }
 
-function populateCountries(places) {
-    const countries = [...new Set(places.map(p => p.country))].sort();
+function setupPriceFilter(places) {
+    const priceFilter = document.getElementById('price-filter');
     
-    // Clear existing options except "All"
-    countryFilter.innerHTML = '<option value="All">All Countries</option>';
-    
-    countries.forEach(country => {
-        if (country) {
-            const option = document.createElement('option');
-            option.value = country;
-            option.innerText = country;
-            countryFilter.appendChild(option);
+    priceFilter.addEventListener('change', (event) => {
+        const selectedPrice = event.target.value;
+        
+        if (selectedPrice === 'All') {
+            displayPlaces(places);
+        } else {
+            const maxPrice = parseFloat(selectedPrice);
+            const filteredPlaces = places.filter(place => place.price <= maxPrice);
+            displayPlaces(filteredPlaces);
         }
     });
 }

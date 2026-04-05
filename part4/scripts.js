@@ -74,7 +74,4 @@ async function handleResponse(response) {
     return response.json();
 }
 
-// Initialize common UI elements
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-});
+// UI elements will pull functions from here when needed.
