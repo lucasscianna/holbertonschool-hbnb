@@ -12,19 +12,21 @@ function checkAuthentication() {
         if (loginLink) loginLink.style.display = 'block';
     } else {
         if (loginLink) loginLink.style.display = 'none';
-        // Fetch places data if the user is authenticated
-        fetchPlaces(token);
     }
+    // Always fetch places
+    fetchPlaces(token);
 }
 
 async function fetchPlaces(token) {
     try {
-        const response = await fetch(`${API_BASE_URL}/places`, {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/places/`, {
             method: 'GET',
-            headers: {
-                // Include the token in the Authorization header
-                'Authorization': `Bearer ${token}`
-            }
+            headers: headers
         });
 
         if (response.ok) {

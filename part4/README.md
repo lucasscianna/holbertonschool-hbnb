@@ -1,54 +1,66 @@
-# HBnB Simple Web Client - Part 4
+# HBnB - Partie 4 : Le Client Web Simple (Frontend)
 
-This project is a simple web client for the HBnB application, developed using HTML5, CSS3, and JavaScript ES6. It connects to the Flask-based API developed in the previous parts of the project.
+Bienvenue dans la **Partie 4** du projet HBnB ! Cette étape consiste à développer l'interface utilisateur (Frontend) complète permettant de communiquer avec notre API Backend Flask conçue dans les parties précédentes.
 
-## Project Structure
+## 🚀 Objectifs du projet
+
+L'objectif de ce module est de construire un "Simple Web Client" fonctionnel en `HTML`, `CSS` et `JavaScript` natif (Vanilla JS), en respectant les principes d'une application dynamique.
+
+Les missions principales accomplies sont :
+1. **Intégration HTML/CSS** : Mise en place d'un design responsive, moderne et épuré.
+2. **Système de Connexion (Login)** : Formulaire fonctionnel envoyant les identifiants à l'API et stockant le **JWT_TOKEN** dans les cookies.
+3. **Consommation de l'API (Fetch)** : 
+    - Récupération de la liste des lieux disponibles (`index.html`).
+    - Récupération des informations détaillées d'un lieu et de ses avis (`place.html`).
+    - Ajout de nouveaux avis via les routes protégées nécessitant une authentification (`add_review.html`).
+4. **Filtres Dynamiques** : Filtrage des logements par prix côté client sans rechargement de page.
+
+## 📁 Architecture des Fichiers
 
 ```text
 part4/
-├── hbnb/               # Backend Flask API (modified for CORS and country filtering)
-├── index.html          # Main page (Places list)
-├── login.html          # Login form
-├── place.html          # Place details page
-├── add_review.html     # Dedicated add review form
-├── styles.css          # Global styles with rich aesthetics
-├── scripts.js          # Shared JavaScript utilities
-├── scripts/            # Modular JavaScript files
-│   ├── index.js        # Places fetching and country filtering
-│   ├── login.js        # Authentication logic
-│   ├── place.js        # Place details and reviews loading
-│   └── review.js       # Add review logic for dedicated page
-└── images/             # Assets (Logo, Favicon)
+│
+├── index.html          # Page d'accueil avec la liste des lieux et les filtres.
+├── login.html          # Page du formulaire de connexion.
+├── place.html          # Page de détails d'un lieu et de ses commentaires.
+├── add_review.html     # Formulaire d'ajout de commentaires (protégé).
+├── styles.css          # Feuille de style principale (Design system).
+│
+├── scripts.js          # Fonctions utilitaires partagées (gestion des cookies, etc).
+└── scripts/
+    ├── index.js        # Logique de chargement des lieux et du filtre de prix.
+    ├── login.js        # Logique de soumission de l'authentification.
+    ├── place.js        # Chargement détaillé d'un lieu via son ID en URL.
+    └── review.js       # Logique d'envoi d'un nouveau commentaire sous JWT Token.
 ```
 
-## Features
+## 🛠️ Instructions pour Lancer l'Application
 
-- **Responsive Design**: A modern, premium interface inspired by top vacation rental platforms.
-- **Authentication**: Secure login using JWT stored in cookies.
-- **Dynamic Content**: Data fetched asynchronously from the API.
-- **Country Filtering**: Client-side filtering of places by country.
-- **Review System**: Authenticated users can submit reviews for places.
-- **CORS Support**: API modified to allow requests from the web client.
+Le Frontend a besoin du Backend pour récupérer la donnée. Vous devez faire tourner les deux environnements en parallèle.
 
-## Setup Instructions
-
-### 1. Start the API
-Navigate to the `hbnb` directory and start the Flask server:
+### 1. Démarrer l'API (Backend)
+Dans un premier terminal, naviguez dans le dossier `part4/hbnb` et lancez le serveur Flask Python :
 ```bash
-cd hbnb
+cd part4/hbnb
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-python run.py
+python3 run.py
 ```
-*Note: Ensure you have `flask-cors` installed.*
+*(L'API devrait tourner sur `http://127.0.0.1:5000`)*
 
-### 2. Open the Client
-Open `index.html` in your favorite web browser.
+### 2. Démarrer le Frontend
+Ouvrez le fichier `index.html` dans Visual Studio Code et utilisez l'extension **Live Server** (bouton "Go Live" en bas à droite).
+Celui-ci va ouvrir l'application dans votre navigateur (généralement sur le port `5500` ou `3000`).
 
-## Technologies Used
+### 3. Connexion de Test
+Si vous avez lancé le fichier `seed_db.py` pour pré-remplir la base, vous pouvez tester la connexion avec le compte suivant :
+- **Email** : `alice@hbnb.com`
+- **Mot de passe** : `password123`
 
-- **Frontend**: HTML5, Vanilla CSS3, JavaScript ES6 (Fetch API).
-- **Backend Integration**: AJAX/Fetch, Cookies for session management.
-- **Dev Tools**: Python (Flask) for the API.
+## 🧪 Tests
+
+Des tests E2E (End-to-End) avec Selenium WebDriver ainsi que des tests unitaires structurels ont été conçus pour éprouver le Frontend. Ils se trouvent dans le registre `part4/hbnb/tests/`.
 
 ---
-*Created by Antigravity for the Holberton School HBnB Project.*
+> Modélisé et conçu dans le cadre du projet HBnB d'Holberton School.
