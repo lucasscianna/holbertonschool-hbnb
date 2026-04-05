@@ -49,7 +49,7 @@ class PlaceList(Resource):
             return {'error': str(e)}, 400
 
     def get(self):
-        return [{'id': p.id, 'title': p.title, 'latitude': p.latitude, 'longitude': p.longitude, 'country': p.country} for p in facade.get_all_places()], 200
+        return [{'id': p.id, 'title': p.title, 'price': p.price, 'latitude': p.latitude, 'longitude': p.longitude, 'country': p.country} for p in facade.get_all_places()], 200
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
