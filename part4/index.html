@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBnB - Find your next stay</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/icon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="index.html"><img src="images/logo.png" alt="HBnB Logo" class="logo"></a>
+        <nav id="nav-links">
+            <a href="login.html" class="login-button" id="login-link">Login</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="filter-section">
+            <label for="country-filter">Filter by Country:</label>
+            <select id="country-filter">
+                <option value="All">All Countries</option>
+                <!-- Dynamically populated -->
+            </select>
+        </section>
+
+        <section id="places-list" class="places-grid">
+            <!-- Dynamically populated cards -->
+            <p>Loading places...</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HBnB. All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script src="scripts/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBnB - Place Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/icon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="index.html"><img src="images/logo.png" alt="HBnB Logo" class="logo"></a>
+        <nav id="nav-links">
+            <a href="login.html" class="login-button" id="login-link">Login</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="place-details" class="place-details">
+            <div id="place-info" class="place-info">
+                <h1 id="place-title">Loading...</h1>
+                <p id="place-host" style="font-weight: 600; margin-bottom: 20px;">Host: ...</p>
+                <div class="price" id="place-price" style="font-size: 24px; color: var(--primary-color); font-weight: 700; margin-bottom: 20px;">$ ...</div>
+                <p id="place-description" style="line-height: 1.8; margin-bottom: 30px;">...</p>
+                
+                <h3>Amenities</h3>
+                <div id="amenities-list" class="amenities-list">
+                    <!-- Dynamically populated tags -->
+                </div>
+            </div>
+
+            <section id="reviews-container">
+                <h2>Reviews</h2>
+                <div id="reviews-list">
+                    <!-- Dynamically populated review cards -->
+                    <p>No reviews yet.</p>
+                </div>
+            </section>
+
+            <section id="add-review-section" style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px; display: none;">
+                <h2>Add a Review</h2>
+                <form id="review-form" class="add-review form">
+                    <div class="form-group">
+                        <label for="review-text">Your Comment</label>
+                        <textarea id="review-text" rows="4" required placeholder="Tell us about your stay..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-rating">Rating</label>
+                        <select id="review-rating" required>
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-button">Submit Review</button>
+                    <p id="review-error" style="color: red; margin-top: 15px; display: none;"></p>
+                </form>
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HBnB. All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script src="scripts/place.js"></script>
+</body>
+</html>
