@@ -162,7 +162,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             headers={'Authorization': f'Bearer {token}'},
             json={"title": "Villa", "price": 100.0,
                   "latitude": 10.0, "longitude": 10.0,
-                  "owner_id": "ignored"})
+                  "owner_id": "ignored", "country": "France"})
         self.assertEqual(res.status_code, 201)
 
     def test_post_place_400_negative_price(self):
@@ -172,14 +172,14 @@ class TestPlaceEndpoints(unittest.TestCase):
             headers={'Authorization': f'Bearer {token}'},
             json={"title": "Villa", "price": -10.0,
                   "latitude": 10.0, "longitude": 10.0,
-                  "owner_id": "ignored"})
+                  "owner_id": "ignored", "country": "France"})
         self.assertEqual(res.status_code, 400)
 
     def test_post_place_401_no_token(self):
         """POST /places/ sans token retourne 401"""
         res = self.client.post('/api/v1/places/', json={
             "title": "Villa", "price": 100.0,
-            "latitude": 10.0, "longitude": 10.0
+            "latitude": 10.0, "longitude": 10.0, "country": "France"
         })
         self.assertEqual(res.status_code, 401)
 
@@ -192,6 +192,12 @@ class TestPlaceEndpoints(unittest.TestCase):
         """GET /places/<id> inexistant retourne 404"""
         res = self.client.get('/api/v1/places/fake-id-999')
         self.assertEqual(res.status_code, 404)
+
+    def test_cors_headers_present(self):
+        """Vérifier que les en-têtes CORS sont présents"""
+        res = self.client.options('/api/v1/places/', headers={'Origin': 'http://localhost'})
+        self.assertIn('Access-Control-Allow-Origin', res.headers)
+        self.assertEqual(res.headers['Access-Control-Allow-Origin'], '*')
 
 
 class TestAmenityEndpoints(unittest.TestCase):

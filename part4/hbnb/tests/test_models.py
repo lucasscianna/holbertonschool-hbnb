@@ -91,7 +91,7 @@ class TestPlaceModel(unittest.TestCase):
         with self.app.app_context():
             owner = User(first_name="John", last_name="Doe", email="john@test.com")
             place = Place(title="Villa", description="Nice", price=100.0,
-                         latitude=10.0, longitude=10.0, owner=owner)
+                         latitude=10.0, longitude=10.0, owner=owner, country="France")
             self.assertEqual(place.title, "Villa")
             self.assertEqual(place.price, 100.0)
 
@@ -101,7 +101,7 @@ class TestPlaceModel(unittest.TestCase):
             owner = User(first_name="John", last_name="Doe", email="john@test.com")
             with self.assertRaises(ValueError):
                 Place(title="", description="Nice", price=100.0,
-                     latitude=10.0, longitude=10.0, owner=owner)
+                     latitude=10.0, longitude=10.0, owner=owner, country="France")
 
     def test_invalid_price_negative(self):
         """Prix négatif lève une ValueError"""
@@ -109,7 +109,7 @@ class TestPlaceModel(unittest.TestCase):
             owner = User(first_name="John", last_name="Doe", email="john@test.com")
             with self.assertRaises(ValueError):
                 Place(title="Villa", description="Nice", price=-5.0,
-                     latitude=10.0, longitude=10.0, owner=owner)
+                     latitude=10.0, longitude=10.0, owner=owner, country="France")
 
     def test_invalid_latitude(self):
         """Latitude hors limites lève une ValueError"""
@@ -117,7 +117,7 @@ class TestPlaceModel(unittest.TestCase):
             owner = User(first_name="John", last_name="Doe", email="john@test.com")
             with self.assertRaises(ValueError):
                 Place(title="Villa", description="Nice", price=100.0,
-                     latitude=200.0, longitude=10.0, owner=owner)
+                     latitude=200.0, longitude=10.0, owner=owner, country="France")
 
     def test_invalid_longitude(self):
         """Longitude hors limites lève une ValueError"""
@@ -125,7 +125,7 @@ class TestPlaceModel(unittest.TestCase):
             owner = User(first_name="John", last_name="Doe", email="john@test.com")
             with self.assertRaises(ValueError):
                 Place(title="Villa", description="Nice", price=100.0,
-                     latitude=10.0, longitude=500.0, owner=owner)
+                     latitude=10.0, longitude=500.0, owner=owner, country="France")
 
 
 class TestReviewModel(unittest.TestCase):

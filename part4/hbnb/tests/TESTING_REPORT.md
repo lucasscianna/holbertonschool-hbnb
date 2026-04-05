@@ -310,3 +310,30 @@ Tous les tests de la **Part 3** ont été validés avec succès. La migration ve
 - **API** : les codes HTTP (200, 201, 400, 401, 403, 404) sont correctement retournés
 
 > ⚠️ Note : `Place` et `Amenity` utilisent encore `InMemoryRepository` mais ce sera migré dans la partie 4 probablement
+
+---
+
+## 8. Partie 4 — Intégration Client Web (Simple Web Client)
+
+L’évolution du projet dans la **Partie 4** a requis l’ajout de la validation client (frontend) et des adaptations de la couche Modèle (ajout du `country`).
+
+### A. Adaptation des Tests API pour Part 4
+1. **Modèle & Facade** : Les tests (Models, Facades) prennent désormais en compte la vérification obligatoire de l'attribut `country` à la création et manipulation des `Place`.
+2. **CORS Headers** : Le protocole Cross-Origin Resource Sharing a été validé. Un test HTTP `OPTIONS` dans `test_endpoints.py` vérifie le retour de l'en-tête `Access-Control-Allow-Origin: *`.
+
+### B. Tests Unitaires du Frontend (`test_frontend_unit.py`)
+Couvre l'intégrité de la base de code UI et s'assure du bon typage sémantique.
+- **Vérification Structurelle** : `index.html`, `login.html`, `place.html` et `add_review.html` existent.
+- **Architecture de Scripts** : Vérification de la présence du design module (scripts locaux et CSS global).
+- **Inclusions HTML** : Contrôle du load effectif de `scripts.js` (les utilitaires communs) dans chaque vue.
+
+### C. Tests End-to-End Frontend (`test_frontend_e2e.py`)
+Utilisation avancée de **Selenium WebDriver** (mode Headless) pour exécuter et simuler des flux utilisateur réels.
+
+| Scénario E2E | Vérification | Résultat attendu | État |
+| :--- | :--- | :--- | :--- |
+| Visiteur Non-Authentifié | Chargement d'index.html | Affichage obligatoire du lien `Login` | ✅ Passé |
+| Flux de Connexion (Login) | Remplissage et clic | Redirection gérée par session cookie (`index.html`) et masquage du btn login | ✅ Passé |
+| Redirection Forcée (Auth) | Requête brute vers `add_review.html` | Retour immédiat vers page publique (index) | ✅ Passé |
+
+*Note sur Selenium: Le fichier E2E python doit avoir accès à l'instance FLASK active localement ainsi qu'un serveur statique desservant le dossier FrontEnd global.*

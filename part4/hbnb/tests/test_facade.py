@@ -178,7 +178,7 @@ class TestPlaceFacade(unittest.TestCase):
             place = facade.create_place({
                 "title": "Villa", "description": "Nice",
                 "price": 100.0, "latitude": 10.0,
-                "longitude": 10.0, "owner_id": owner.id
+                "longitude": 10.0, "owner_id": owner.id, "country": "France"
             })
             self.assertEqual(place.title, "Villa")
             self.assertEqual(place.price, 100.0)
@@ -194,7 +194,7 @@ class TestPlaceFacade(unittest.TestCase):
                 facade.create_place({
                     "title": "Villa", "price": -10.0,
                     "latitude": 10.0, "longitude": 10.0,
-                    "owner_id": owner.id
+                    "owner_id": owner.id, "country": "France"
                 })
 
     def test_create_place_owner_not_found(self):
@@ -206,7 +206,7 @@ class TestPlaceFacade(unittest.TestCase):
                 facade.create_place({
                     "title": "Villa", "price": 100.0,
                     "latitude": 10.0, "longitude": 10.0,
-                    "owner_id": "fake-owner-id"
+                    "owner_id": "fake-owner-id", "country": "France"
                 })
 
     def test_get_place(self):
@@ -218,7 +218,7 @@ class TestPlaceFacade(unittest.TestCase):
             place = facade.create_place({
                 "title": "Villa", "price": 100.0,
                 "latitude": 10.0, "longitude": 10.0,
-                "owner_id": owner.id
+                "owner_id": owner.id, "country": "France"
             })
             fetched = facade.get_place(place.id)
             self.assertEqual(fetched.id, place.id)
