@@ -1,61 +1,66 @@
 // review.js
-const urlParams = new URLSearchParams(window.location.search);
-const placeId = urlParams.get('id');
 
-const reviewForm = document.getElementById('review-form');
-const placeNameDisplay = document.getElementById('place-name-display');
+function checkAuthentication() {
+    const token = getCookie('token');
+    if (!token) {
+        window.location.href = 'index.html';
+    }
+    return token;
+}
+
+function getPlaceIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Task 5: Form accessible only to authenticated users
-    if (!getCookie('token')) {
-        window.location.href = 'index.html';
-        return;
-    }
+    const reviewForm = document.getElementById('review-form');
+    const token = checkAuthentication();
+    const placeId = getPlaceIdFromURL();
 
     if (!placeId) {
         window.location.href = 'index.html';
         return;
     }
 
-    fetchPlaceName();
-    
-    reviewForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const text = document.getElementById('review-text').value;
-        const rating = parseInt(document.getElementById('review-rating').value);
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/reviews/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getCookie('token')}`
-                },
-                body: JSON.stringify({
-                    place_id: placeId,
-                    text: text,
-                    rating: rating
-                })
-            });
-
-            if (response.ok) {
-                window.location.href = `place.html?id=${placeId}`;
-            } else {
-                const error = await response.json();
-                alert(error.error || 'Failed to submit review');
-            }
-        } catch (err) {
-            alert('Error connecting to the server');
-        }
-    });
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const reviewText = document.getElementById('review-text').value;
+            const reviewRating = document.getElementById('review-rating').value;
+            submitReview(token, placeId, reviewText, reviewRating);
+        });
+    }
 });
 
-async function fetchPlaceName() {
+async function submitReview(token, placeId, reviewText, reviewRating) {
     try {
-        const response = await fetch(`${API_BASE_URL}/places/${placeId}`);
-        const place = await response.json();
-        placeNameDisplay.innerText = place.title;
+        const response = await fetch(`${API_BASE_URL}/reviews/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                place_id: placeId,
+                text: reviewText,
+                rating: parseInt(reviewRating)
+            })
+        });
+        handleResponse(response);
     } catch (err) {
-        placeNameDisplay.innerText = 'Place';
+        alert('Failed to submit review due to a network error.');
+    }
+}
+
+async function handleResponse(response) {
+    if (response.ok) {
+        alert('Review submitted successfully!');
+        document.getElementById('review-form').reset();
+        // Redirect back to the place details
+        window.location.href = `place.html?id=${getPlaceIdFromURL()}`;
+    } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`Failed to submit review: ${errorData.error || response.statusText}`);
     }
 }
