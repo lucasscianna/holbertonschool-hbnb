@@ -12,6 +12,7 @@
     <header>
         <a href="index.html"><img src="images/logo.png" alt="HBnB Logo" class="logo"></a>
         <nav id="nav-links">
+            <a href="index.html">Home</a>
             <a href="login.html" class="login-button" id="login-link">Login</a>
         </nav>
     </header>
@@ -24,7 +25,7 @@
                 <div class="price" id="place-price" style="font-size: 24px; color: var(--primary-color); font-weight: 700; margin-bottom: 20px;">$ ...</div>
                 <p id="place-description" style="line-height: 1.8; margin-bottom: 30px;">...</p>
                 
-                <h3>Amenities</h3>
+                <h2>Amenities</h2>
                 <div id="amenities-list" class="amenities-list">
                     <!-- Dynamically populated tags -->
                 </div>
@@ -48,6 +49,7 @@
                     <div class="form-group">
                         <label for="review-rating">Rating</label>
                         <select id="review-rating" required>
+                            <option value="" disabled selected>Select rating</option>
                             <option value="5">5 - Excellent</option>
                             <option value="4">4 - Very Good</option>
                             <option value="3">3 - Good</option>

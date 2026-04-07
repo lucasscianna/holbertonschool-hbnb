@@ -12,12 +12,14 @@
     <header>
         <a href="index.html"><img src="images/logo.png" alt="HBnB Logo" class="logo"></a>
         <nav id="nav-links">
+            <a href="index.html">Home</a>
             <a href="login.html" class="login-button" id="login-link">Login</a>
         </nav>
     </header>
 
     <main>
         <section id="filter-section">
+            <h2>Filter places</h2>
             <label for="price-filter">Filter by Max Price:</label>
             <select id="price-filter">
                 <option value="All">All</option>
@@ -28,6 +30,7 @@
         </section>
 
         <section id="places-list" class="places-grid">
+            <h2>Available places</h2>
             <!-- Dynamically populated cards -->
             <p>Loading places...</p>
         </section>

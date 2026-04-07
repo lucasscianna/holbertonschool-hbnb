@@ -85,10 +85,11 @@ function displayPlaceDetails(place) {
     reviewsList.innerHTML = '';
     if (place.reviews && place.reviews.length > 0) {
         place.reviews.forEach(review => {
+            const reviewer = review.user_name || review.user_id || 'Guest';
             const card = document.createElement('div');
             card.className = 'review-card';
             card.innerHTML = `
-                <p class="user-name">${review.user_name || 'Guest'}</p>
+                <p class="user-name">${reviewer}</p>
                 <p class="rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
                 <p>${review.text}</p>
             `;

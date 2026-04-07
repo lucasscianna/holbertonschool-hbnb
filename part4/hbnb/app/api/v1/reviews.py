@@ -29,6 +29,8 @@ class ReviewList(Resource):
             return {'error': 'You cannot review your own place'}, 400
 
         try:
+            # Add user_id from JWT to review_data
+            review_data['user_id'] = current_user_id
             new_review = facade.create_review(review_data)
             return {
                 'id': new_review.id,
