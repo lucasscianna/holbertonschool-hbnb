@@ -136,6 +136,11 @@ async function handleResponse(response) {
 
 // UI elements will pull functions from here when needed.
 
+// Initialize authentication check on page load
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+});
+
 /**
  * Returns an SVG icon string for a given amenity name.
  * Falls back to a generic star icon for unrecognized amenities.
