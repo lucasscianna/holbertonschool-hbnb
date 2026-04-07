@@ -13,7 +13,7 @@ api = Api(
     title='HBnB API',
     version='1.0',
     description="API de l'application HBnB",
-    doc='/api/v1/'
+    doc='/'
 )
 
 api.add_namespace(users_ns, path='/users')
