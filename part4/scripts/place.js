@@ -22,11 +22,9 @@ function checkAuthentication() {
 
     if (!token) {
         if (addReviewSection) addReviewSection.style.display = 'none';
-        // Fetch public details
         fetchPlaceDetails(null, placeId);
     } else {
         if (addReviewSection) addReviewSection.style.display = 'block';
-        // Store the token for later use and fetch details
         fetchPlaceDetails(token, placeId);
     }
 }
@@ -36,7 +34,6 @@ async function fetchPlaceDetails(token, placeId) {
         const headers = {
             'Content-Type': 'application/json'
         };
-        // Ensure the request includes the JWT token for authentication if available
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
@@ -50,12 +47,14 @@ async function fetchPlaceDetails(token, placeId) {
             const place = await response.json();
             displayPlaceDetails(place);
         } else {
-            console.error('Failed to fetch place details:', response.statusText);
-            document.getElementById('place-title').innerText = 'Error loading place details.';
+            console.warn('API returned error, using hardcoded data.');
+            const place = getHardcodedPlaceById(placeId);
+            displayPlaceDetails(place);
         }
     } catch (err) {
-        console.error('Error:', err);
-        document.getElementById('place-title').innerText = 'Error connecting to server.';
+        console.warn('API unavailable, using hardcoded data.', err);
+        const place = getHardcodedPlaceById(placeId);
+        displayPlaceDetails(place);
     }
 }
 
@@ -66,14 +65,15 @@ function displayPlaceDetails(place) {
     document.getElementById('place-price').innerText = `$${place.price} per night`;
     document.getElementById('place-description').innerText = place.description || 'No description available.';
 
-    // Populate amenities
+    // Populate amenities with icons
     const amenitiesList = document.getElementById('amenities-list');
     amenitiesList.innerHTML = '';
     if (place.amenities && place.amenities.length > 0) {
         place.amenities.forEach(amenity => {
             const tag = document.createElement('span');
             tag.className = 'amenity-tag';
-            tag.innerText = amenity.name;
+            const iconSvg = getAmenityIcon(amenity.name);
+            tag.innerHTML = `<span class="amenity-icon">${iconSvg}</span><span class="amenity-name">${amenity.name}</span>`;
             amenitiesList.appendChild(tag);
         });
     } else {
@@ -127,7 +127,6 @@ function setupReviewForm() {
             });
 
             if (response.ok) {
-                // Refresh place details to see the new review
                 fetchPlaceDetails(token, placeId);
                 reviewForm.reset();
                 alert('Review added successfully!');

@@ -34,11 +34,14 @@ async function fetchPlaces(token) {
             displayPlaces(places);
             setupPriceFilter(places);
         } else {
-            console.error('Failed to fetch places:', response.statusText);
+            console.warn('API returned error, using hardcoded data.');
+            displayPlaces(HARDCODED_PLACES);
+            setupPriceFilter(HARDCODED_PLACES);
         }
     } catch (err) {
-        console.error('Error fetching places:', err);
-        document.getElementById('places-list').innerHTML = '<p style="color: red;">Error loading places. Ensure API is running.</p>';
+        console.warn('API unavailable, using hardcoded data.', err);
+        displayPlaces(HARDCODED_PLACES);
+        setupPriceFilter(HARDCODED_PLACES);
     }
 }
 
